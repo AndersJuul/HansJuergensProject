@@ -2,13 +2,19 @@
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using Ajf.Nuget.Logging;
+using Serilog;
+using Web;
 
-namespace Web
+namespace WebHJ
 {
     public class MvcApplication : HttpApplication
     {
         protected void Application_Start()
         {
+            Log.Logger = StandardLoggerConfigurator.GetEnrichedLogger();
+            Log.Logger.Information("Starting...");
+
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
