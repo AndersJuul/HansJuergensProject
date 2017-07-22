@@ -5,11 +5,11 @@ namespace WebHJ.Models
     public class ExpenseModel
     {
         [Required(ErrorMessage = "{0} is required")]
-        [Display(Name = "Expense Description")]
+        [Display(Name = "Description")]
         public string Description { get; set; }
 
         [Required(ErrorMessage = "{0} is required")]
-        [Display(Name = "Amount")]
-        public string Amount { get; set; }
+        [Display(Name = "Email")]
+        public string Email { get; set; }
     }
 }

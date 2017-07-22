@@ -13,8 +13,8 @@
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WebHJ</RootNamespace>
-    <AssemblyName>WebHJ</AssemblyName>
+    <RootNamespace>HansJuergenWeb.WebHJ</RootNamespace>
+    <AssemblyName>HansJuergenWeb.WebHJ</AssemblyName>
     <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
@@ -49,6 +49,9 @@
     <Reference Include="Ajf.Nuget.Logging, Version=1.0.0.34, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Ajf.Nuget.Logging.1.0.0.34\lib\net47\Ajf.Nuget.Logging.dll</HintPath>
     </Reference>
+    <Reference Include="EasyNetQ, Version=1.1.4.506, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\EasyNetQ.1.1.4.506\lib\net45\EasyNetQ.dll</HintPath>
+    </Reference>
     <Reference Include="Elasticsearch.Net, Version=5.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
       <HintPath>..\packages\Elasticsearch.Net.5.4.0\lib\net46\Elasticsearch.Net.dll</HintPath>
     </Reference>
@@ -56,6 +59,12 @@
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.3\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Diagnostics.Tracing.EventSource, Version=1.1.28.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Diagnostics.Tracing.EventSource.Redist.1.1.28\lib\net46\Microsoft.Diagnostics.Tracing.EventSource.dll</HintPath>
+    </Reference>
+    <Reference Include="RabbitMQ.Client, Version=3.6.0.0, Culture=neutral, PublicKeyToken=89e7d7c5feba84ce, processorArchitecture=MSIL">
+      <HintPath>..\packages\RabbitMQ.Client.3.6.0\lib\net45\RabbitMQ.Client.dll</HintPath>
+    </Reference>
     <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.2.5.0\lib\net46\Serilog.dll</HintPath>
     </Reference>
@@ -162,6 +171,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="AppSettings.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\UploadController.cs" />
     <Compile Include="Global.asax.cs">
@@ -219,10 +229,18 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="packages.config" />
+    <Content Include="packages.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Scripts\jquery-1.10.2.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Contracts\Contracts.csproj">
+      <Project>{340FEF4D-2CAE-4AD3-A9D2-A12A770A143D}</Project>
+      <Name>Contracts</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
