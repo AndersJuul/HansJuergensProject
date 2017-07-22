@@ -1,16 +1,20 @@
-﻿using System;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 using System.Web.Mvc;
 using EasyNetQ;
 using HansJuergenWeb.Contracts;
-using RabbitMQ.Client;
+using WebHJ;
 using WebHJ.Models;
 
-namespace WebHJ.Controllers
+namespace HansJuergenWeb.WebHJ.Controllers
 {
     public class UploadController : Controller
     {
+        private readonly IBus _bus;
+
+        public UploadController(IBus bus)
+        {
+            _bus = bus;
+        }
         // GET: Upload
         public ActionResult Post(ExpenseModel expenseModel)
         {
@@ -23,8 +27,6 @@ namespace WebHJ.Controllers
 
                 var appSettings = new AppSettings();
 
-                using (var bus =RabbitHutch.CreateBus("host=ajf-elastic-01;username=Anders;password=21Bananer;timeout=30"))
-                {
                     var message = new FileUploadedEvent
                     {
                         FileName = filename,
@@ -32,24 +34,7 @@ namespace WebHJ.Controllers
                         Description = expenseModel.Description
 
                     };
-                    bus.Publish(message);
-                }
-                //var connectioFa = new ConnectionFactory
-                //{
-                //    HostName = "ajf-elastic-01",
-                //    UserName = "anders",
-                //    Password = "21Bananer"
-                //};
-
-                //var connection = connectioFa.CreateConnection();
-                //var model = connection.CreateModel();
-
-                //var properties = model.CreateBasicProperties();
-                //properties.Persistent = true;
-
-                //var messageBuffer = Encoding.Default.GetBytes("Hello");
-
-                //model.BasicPublish(appSettings.ExchangeName, "", properties, messageBuffer);
+                    _bus.Publish(message);
 
             }
 

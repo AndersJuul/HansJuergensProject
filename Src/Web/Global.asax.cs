@@ -6,7 +6,7 @@ using Ajf.Nuget.Logging;
 using Serilog;
 using Web;
 
-namespace WebHJ
+namespace HansJuergenWeb.WebHJ
 {
     public class MvcApplication : HttpApplication
     {
