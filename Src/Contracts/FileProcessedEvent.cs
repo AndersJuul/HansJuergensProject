@@ -1,6 +1,6 @@
 ﻿namespace HansJuergenWeb.Contracts
 {
-    public class FileUploadedEvent
+    public class FileProcessedEvent
     {
         public string FileName { get; set; }
 
