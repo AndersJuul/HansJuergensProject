@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace WebHJ.Models
+namespace HansJuergenWeb.WebHJ.Models
 {
-    public class ExpenseModel
+    public class UploadModel
     {
         [Required(ErrorMessage = "{0} is required")]
         [Display(Name = "Description")]

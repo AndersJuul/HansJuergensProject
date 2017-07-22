@@ -2,8 +2,8 @@
 using System.Web.Mvc;
 using EasyNetQ;
 using HansJuergenWeb.Contracts;
+using HansJuergenWeb.WebHJ.Models;
 using Serilog;
-using WebHJ.Models;
 
 namespace HansJuergenWeb.WebHJ.Controllers
 {
@@ -16,7 +16,7 @@ namespace HansJuergenWeb.WebHJ.Controllers
             _bus = bus;
         }
         // GET: Upload
-        public ActionResult Post(ExpenseModel expenseModel)
+        public ActionResult Post(UploadModel uploadModel)
         {
             foreach (string upload in Request.Files)
             {
@@ -30,8 +30,8 @@ namespace HansJuergenWeb.WebHJ.Controllers
                     var message = new FileUploadedEvent
                     {
                         FileName = filename,
-                        Email =expenseModel.Email,
-                        Description = expenseModel.Description
+                        Email =uploadModel.Email,
+                        Description = uploadModel.Description
                     };
                     _bus.Publish(message);
 
