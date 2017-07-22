@@ -27,14 +27,27 @@ namespace HansJuergenWeb.WebHJ.Controllers
 
                 var appSettings = new AppSettings();
 
+                //var message = new FileUploadedEvent
+                //{
+                //    FileName = filename,
+                //    Email = expenseModel.Email,
+                //    Description = expenseModel.Description
+
+                //};
+                //_bus.Publish(message);
+
+                //using (var bus = RabbitHutch.CreateBus("host=ajf-elastic-01;username=anders;password=21Bananer;timeout=10"))
+                //{
                     var message = new FileUploadedEvent
                     {
-                        FileName = filename,
-                        Email = expenseModel.Email,
-                        Description = expenseModel.Description
+                        FileName = "dummy.txt",
+                        Email = "foo@bar.org",
+                        Description = "Lorem ipsum"
 
                     };
                     _bus.Publish(message);
+                //}
+
 
             }
 

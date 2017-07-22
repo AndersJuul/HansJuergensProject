@@ -24,7 +24,7 @@ namespace HansJuergenWeb.WebHJ.DependencyResolution {
         #region Constructors and Destructors
 
         public DefaultRegistry() {
-            var bus = RabbitHutch.CreateBus("host=ajf-elastic-01;username=Anders;password=21Bananer;timeout=10");
+            var bus = RabbitHutch.CreateBus("host=ajf-elastic-01;username=anders;password=21Bananer;timeout=10");
 
             Scan(
                 scan => {
