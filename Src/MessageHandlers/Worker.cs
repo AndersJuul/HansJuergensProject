@@ -44,7 +44,7 @@ namespace HansJuergenWeb.MessageHandlers
                     .ContinueWith(DefaultErrorHandling()));
         }
 
-        private object ProcessUploadedFileThroughR(FileUploadedEvent message)
+        private void ProcessUploadedFileThroughR(FileUploadedEvent message)
         {
             Log.Logger.Information("Message received <Faking process through R>");
 
