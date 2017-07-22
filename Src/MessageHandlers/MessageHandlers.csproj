@@ -88,6 +88,12 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Contracts\Contracts.csproj">
+      <Project>{340FEF4D-2CAE-4AD3-A9D2-A12A770A143D}</Project>
+      <Name>Contracts</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\OctoPack.3.6.1\build\OctoPack.targets" Condition="Exists('..\packages\OctoPack.3.6.1\build\OctoPack.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

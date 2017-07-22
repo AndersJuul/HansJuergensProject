@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Web.Mvc;
 using EasyNetQ;
+using HansJuergenWeb.Contracts;
 using RabbitMQ.Client;
 using WebHJ.Models;
 

@@ -1,6 +1,10 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Threading;
+using System.Threading.Tasks;
+using EasyNetQ;
+using EasyNetQ.MessageVersioning;
+using HansJuergenWeb.Contracts;
 using MessageHandlers;
 using RabbitMQ.Client;
 using Serilog;
@@ -12,6 +16,7 @@ namespace HansJuergenWeb.MessageHandlers
         private readonly IAppSettings _appSettings;
         private BackgroundWorker _backgroundWorker;
         private IModel _model;
+        private IBus _bus;
 
         public Worker(IAppSettings appSettings)
         {
@@ -50,7 +55,7 @@ namespace HansJuergenWeb.MessageHandlers
 
             try
             {
-                //SetupRabbit();
+                SetupSubscriptions();
                 DoWorkInternal(sender);
             }
             catch (Exception ex)
@@ -58,6 +63,29 @@ namespace HansJuergenWeb.MessageHandlers
                 Log.Error(ex, "During do work", new object[0]);
                 throw;
             }
+        }
+
+        private void SetupSubscriptions()
+        {
+            _bus = RabbitHutch.CreateBus("host=ajf-elastic-01;username=anders;password=21Bananer;timeout=30");
+
+            _bus.SubscribeAsync<FileUploadedEvent>("Queue_Identifier",
+                message => Task.Factory.StartNew(() => { Log.Logger.Information("Message received"); }).ContinueWith(task =>
+                {
+                    if (task.IsCompleted && !task.IsFaulted)
+                    {
+                        // Everything worked out ok
+                        Log.Logger.Information("Everything worked out ok");
+                    }
+                    else
+                    {
+                        // Dont catch this, it is caught further up the heirarchy and results in being sent to the default error queue
+                        // on the broker
+                        Log.Logger.Information("Message exception");
+
+                        throw new EasyNetQException("Message processing exception - look in the default error queue (broker)");
+                    }
+                }));
         }
 
         //private void SetupRabbit()

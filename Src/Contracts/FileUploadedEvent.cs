@@ -1,4 +1,4 @@
-﻿namespace WebHJ.Controllers
+﻿namespace HansJuergenWeb.Contracts
 {
     public class FileUploadedEvent
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EasyNetQ;
-using WebHJ.Controllers;
+using HansJuergenWeb.Contracts;
 
 namespace POC
 {
