@@ -64,7 +64,7 @@ namespace MessageHandlers
                             throw;
                         }
                     });
-                    x.RunAsLocalSystem(); //6
+                    x.RunAs(appSettings.RunAsUserName,appSettings.RunAsPassword); //6
 
                     x.SetDescription(appSettings.Description); //7
                     x.SetDisplayName(appSettings.DisplayName); //8
