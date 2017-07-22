@@ -2,7 +2,7 @@
 using System.Web.Mvc;
 using EasyNetQ;
 using HansJuergenWeb.Contracts;
-using WebHJ;
+using Serilog;
 using WebHJ.Models;
 
 namespace HansJuergenWeb.WebHJ.Controllers
@@ -25,30 +25,17 @@ namespace HansJuergenWeb.WebHJ.Controllers
                 var filename = Path.GetFileName(Request.Files[upload].FileName);
                 Request.Files[upload].SaveAs(Path.Combine(pathToSave, filename));
 
-                var appSettings = new AppSettings();
+                Log.Logger.Information("Received file: {rfile}",filename);
 
-                //var message = new FileUploadedEvent
-                //{
-                //    FileName = filename,
-                //    Email = expenseModel.Email,
-                //    Description = expenseModel.Description
-
-                //};
-                //_bus.Publish(message);
-
-                //using (var bus = RabbitHutch.CreateBus("host=ajf-elastic-01;username=anders;password=21Bananer;timeout=10"))
-                //{
                     var message = new FileUploadedEvent
                     {
-                        FileName = "dummy.txt",
-                        Email = "foo@bar.org",
-                        Description = "Lorem ipsum"
-
+                        FileName = filename,
+                        Email =expenseModel.Email,
+                        Description = expenseModel.Description
                     };
                     _bus.Publish(message);
-                //}
 
-
+                Log.Logger.Information("Message broadcasted that file was uploaded: {@message}", message);
             }
 
             return RedirectToAction("Index", "Home");

@@ -1,18 +1,9 @@
-﻿using Ajf.Nuget.Logging;
-using MessageHandlers;
+﻿using System.Configuration;
+using Ajf.Nuget.Logging;
 
 namespace HansJuergenWeb.MessageHandlers
 {
     public class AppSettings : ServiceSettingsFromConfigFile, IAppSettings
     {
-        public AppSettings()
-        {
-            //QueueName = $"{Environment}.{SuiteName}.MailsToSend";
-            //ExchangeName = $"{Environment}.{SuiteName}.MailsToSend";
-        }
-
-        //public string ExchangeName { get; set; }
-
-        //public string QueueName { get; set; }
     }
 }

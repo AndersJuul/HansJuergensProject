@@ -1,7 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-<PropertyGroup><OctoPackProjectName>HansJuergenWeb.MessageHandlers</OctoPackProjectName></PropertyGroup>
+  <PropertyGroup>
+    <OctoPackProjectName>HansJuergenWeb.MessageHandlers</OctoPackProjectName>
+  </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -36,8 +38,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Ajf.Nuget.Logging, Version=1.0.0.34, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Ajf.Nuget.Logging.1.0.0.34\lib\net47\Ajf.Nuget.Logging.dll</HintPath>
+    <Reference Include="Ajf.Nuget.Logging, Version=1.0.0.36, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ajf.Nuget.Logging.1.0.0.36\lib\net47\Ajf.Nuget.Logging.dll</HintPath>
     </Reference>
     <Reference Include="EasyNetQ, Version=1.1.4.506, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\EasyNetQ.1.1.4.506\lib\net45\EasyNetQ.dll</HintPath>
@@ -67,6 +69,7 @@
       <HintPath>..\packages\Serilog.Sinks.RollingFile.3.3.0\lib\net45\Serilog.Sinks.RollingFile.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />

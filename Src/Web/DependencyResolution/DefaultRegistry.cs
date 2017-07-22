@@ -15,6 +15,8 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
+using WebHJ;
+
 namespace HansJuergenWeb.WebHJ.DependencyResolution {
     using StructureMap.Configuration.DSL;
     using StructureMap.Graph;
@@ -23,8 +25,10 @@ namespace HansJuergenWeb.WebHJ.DependencyResolution {
     public class DefaultRegistry : Registry {
         #region Constructors and Destructors
 
-        public DefaultRegistry() {
-            var bus = RabbitHutch.CreateBus("host=ajf-elastic-01;username=anders;password=21Bananer;timeout=10");
+        public DefaultRegistry()
+        {
+            var appSettings = new AppSettings();
+            var bus = RabbitHutch.CreateBus(appSettings.EasyNetQConfig);
 
             Scan(
                 scan => {
