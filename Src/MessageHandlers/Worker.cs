@@ -9,11 +9,13 @@ namespace HansJuergenWeb.MessageHandlers
     public class Worker
     {
         private readonly IAppSettings _appSettings;
+        private readonly IRadapter _radapter;
         private IBus _bus;
 
-        public Worker(IAppSettings appSettings)
+        public Worker(IAppSettings appSettings, IRadapter radapter)
         {
             _appSettings = appSettings;
+            _radapter = radapter;
         }
 
         public bool WorkDone { get; set; }
@@ -48,7 +50,9 @@ namespace HansJuergenWeb.MessageHandlers
         {
             Log.Logger.Information("Message received <Faking process through R>");
 
-            _bus.PublishAsync(new FileProcessedEvent()
+            _radapter.BatchProcess(@".\TheScript.R",message.Id);
+
+            _bus.PublishAsync(new FileProcessedEvent
             {
                 Description = message.Description,
                 Email = message.Email,
@@ -62,7 +66,7 @@ namespace HansJuergenWeb.MessageHandlers
             {
                 if (task.IsCompleted && !task.IsFaulted)
                 {
-                    Log.Logger.Information("Everything worked out ok");
+                    //Log.Logger.Information("Everything worked out ok");
                 }
                 else
                 {

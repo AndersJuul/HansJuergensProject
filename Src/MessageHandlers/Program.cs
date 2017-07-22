@@ -20,13 +20,18 @@ namespace MessageHandlers
             {
                 var appSettings = new AppSettings();
 
+                var radapter = new Radapter();
+
                 HostFactory.Run(x => //1
                 {
                     x.Service<Worker>(s => //2
                     {
                         try
                         {
-                            s.ConstructUsing(name => new Worker(appSettings)); //3
+                            s.ConstructUsing(name =>
+                            {
+                                return new Worker(appSettings, radapter);
+                            }); //3
                             s.WhenStarted(tc =>
                             {
                                 Log.Logger.Information("Starting service");

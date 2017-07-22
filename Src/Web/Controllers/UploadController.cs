@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Web.Mvc;
 using EasyNetQ;
 using HansJuergenWeb.Contracts;
@@ -18,10 +19,16 @@ namespace HansJuergenWeb.WebHJ.Controllers
         // GET: Upload
         public ActionResult Post(UploadModel uploadModel)
         {
+            var uploadDir = @"c:\temp\hjuploads\";
+            var guid = Guid.NewGuid();
+            var pathToSave = Path.Combine(uploadDir, guid.ToString());
+
+            Directory.CreateDirectory(pathToSave);
+
             foreach (string upload in Request.Files)
             {
                 if (Request.Files[upload].ContentLength == 0) continue;
-                var pathToSave = Path.GetTempPath();
+                
                 var filename = Path.GetFileName(Request.Files[upload].FileName);
                 Request.Files[upload].SaveAs(Path.Combine(pathToSave, filename));
 
@@ -31,7 +38,8 @@ namespace HansJuergenWeb.WebHJ.Controllers
                     {
                         FileName = filename,
                         Email =uploadModel.Email,
-                        Description = uploadModel.Description
+                        Description = uploadModel.Description,
+                        Id = guid
                     };
                     _bus.Publish(message);
 

@@ -1,4 +1,6 @@
-﻿namespace HansJuergenWeb.Contracts
+﻿using System;
+
+namespace HansJuergenWeb.Contracts
 {
     public class FileUploadedEvent
     {
@@ -7,5 +9,7 @@
         public string Email { get; set; }
 
         public string Description { get; set; }
+
+        public Guid Id { get; set; }
     }
 }
