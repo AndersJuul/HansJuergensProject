@@ -38,8 +38,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Ajf.Nuget.Logging, Version=1.0.0.36, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Ajf.Nuget.Logging.1.0.0.36\lib\net47\Ajf.Nuget.Logging.dll</HintPath>
+    <Reference Include="Ajf.Nuget.Logging, Version=1.0.0.37, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ajf.Nuget.Logging.1.0.0.37\lib\net47\Ajf.Nuget.Logging.dll</HintPath>
     </Reference>
     <Reference Include="EasyNetQ, Version=1.1.4.506, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\EasyNetQ.1.1.4.506\lib\net45\EasyNetQ.dll</HintPath>
