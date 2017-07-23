@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Reflection;
 using System.Threading.Tasks;
 using Ajf.Nuget.Logging;
 using EasyNetQ;
-using EasyNetQ.AutoSubscribe;
 using HansJuergenWeb.Contracts;
 using Serilog;
-using StructureMap;
 
 namespace HansJuergenWeb.MessageHandlers
 {
@@ -47,8 +44,12 @@ namespace HansJuergenWeb.MessageHandlers
         {
             Log.Logger.Information("Message received in SendEmailConfirmingUpload: {@fileUploadedEvent}", message);
 
-            var ajf = "andersjuulsfirma@gmail.com";
-            return _mailSender.SendMailAsync(ajf, ajf, ajf, "Notification: Files uploaded", "");
+            return _mailSender.SendMailAsync(
+                message.Email, 
+                _appSettings.CcAddress, 
+                _appSettings.SenderAddress, 
+                _appSettings.Subject, 
+                "<html>Hello</html>");
         }
 
         private Task ProcessUploadedFileThroughR(FileUploadedEvent message)
