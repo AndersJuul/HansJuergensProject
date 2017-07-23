@@ -12,21 +12,37 @@
 <div class="row">
     <div class="col-md-12">
         <h2>Uploading</h2>
-        @using (Html.BeginForm("Post", "Upload", FormMethod.Post, 
-            new { enctype = "multipart/form-data" }))
-        { 
+        @using (Html.BeginForm("Post", "Upload", FormMethod.Post,new { enctype = "multipart/form-data" }))
+        {
 
             @Html.LabelFor(m => m.Description)
-            <div>@Html.TextBoxFor(m => m.Description)</div>
+            <div>
+                @Html.TextBoxFor(m => m.Description)
+                @Html.ValidationMessageFor(model => model.Description)
+            </div>
+
+            <div style="margin-top: 20px"></div>
 
             @Html.LabelFor(m => m.Email)
-            <div>@Html.TextBoxFor(m => m.Email)</div>
-            <input type="file" name="FileUpload" multiple="multiple"  />
-
+            <div>
+                @Html.TextBoxFor(m => m.Email)
+                @Html.ValidationMessageFor(model => model.Email)
+            </div>
+            
+            <div style="margin-top: 20px"></div>
+            
+            @Html.Label("Data files, positive and negative files")
+            <div>
+                <input type="file" name="FileUpload" multiple="multiple" />    
+            </div>
+            
+            <div style="margin-top: 20px"></div>
+                        
             <input type="submit" value="Upload" class="btn" />
 
             <div class="err">
                 @Html.ValidationSummary()
             </div>
-        }    </div>
+        }
+    </div>
 </div>

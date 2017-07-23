@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Web;
 using System.Web.Mvc;
 using EasyNetQ;
 using HansJuergenWeb.Contracts;
@@ -13,14 +12,28 @@ namespace HansJuergenWeb.WebHJ.Controllers
     public class UploadController : Controller
     {
         private readonly IBus _bus;
+        private readonly IEnumerable<IValidateUpload> _uploadValidators;
 
-        public UploadController(IBus bus)
+        public UploadController(IBus bus, IEnumerable<IValidateUpload> uploadValidators)
         {
             _bus = bus;
+            _uploadValidators = uploadValidators;
         }
+
+        public ActionResult Error(UploadErrorModel uploadErrorModel)
+        {
+            ViewBag.Message = "Error uploading.";
+
+            return View("Error");
+        }
+
         // GET: Upload
         public ActionResult Post(UploadModel uploadModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return Error(new UploadErrorModel());
+            }
             var guid = Guid.NewGuid();
             Log.Logger.Information("Received request to upload: {uploadId}", guid);
 
@@ -30,15 +43,19 @@ namespace HansJuergenWeb.WebHJ.Controllers
             Directory.CreateDirectory(pathToSave);
 
             var fileNames = new List<string>();
-            for (int i = 0; i < Request.Files.Count; i++)
+            for (var i = 0; i < Request.Files.Count; i++)
             {
                 if (Request.Files[i].ContentLength == 0) continue;
-                
+
                 var filename = Path.GetFileName(Request.Files[i].FileName);
                 Request.Files[i].SaveAs(Path.Combine(pathToSave, filename));
                 fileNames.Add(filename);
             }
-            
+
+            foreach (var uploadValidator in _uploadValidators)
+            {
+                var validationResult = uploadValidator.Validate(uploadModel, pathToSave, fileNames);
+            }
 
             Log.Logger.Information("Received file: {rfile}", fileNames.ToArray());
 
