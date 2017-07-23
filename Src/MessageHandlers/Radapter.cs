@@ -1,8 +1,8 @@
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
 
 namespace HansJuergenWeb.MessageHandlers
 {
@@ -10,6 +10,8 @@ namespace HansJuergenWeb.MessageHandlers
     {
         public void BatchProcess(string pathToScript, Guid messageId)
         {
+            Log.Logger.Information("Starting R processing...");
+
             var uploadDir = @"c:\temp\hjuploads\";
             var pathToData = Path.Combine(uploadDir, messageId.ToString());
 
@@ -21,13 +23,15 @@ namespace HansJuergenWeb.MessageHandlers
             stringBuilder.Add($"copy .\\TheScript.R {pathToData}");
             stringBuilder.Add($"cd {pathToData}");
             stringBuilder.Add($"{fileName} {arguments}");
-            stringBuilder.Add($"pause");
+            //stringBuilder.Add($"pause");
 
             var pathToCmd = Path.Combine( pathToData , "process.cmd");
             File.WriteAllLines(pathToCmd,stringBuilder);
 
             var process = Process.Start(pathToCmd);
             process.WaitForExit(30000);
+
+            Log.Logger.Information("Ended R processing...");
         }
     }
 }

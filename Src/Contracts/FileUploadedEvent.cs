@@ -4,7 +4,7 @@ namespace HansJuergenWeb.Contracts
 {
     public class FileUploadedEvent
     {
-        public string FileName { get; set; }
+        public string[] FileNames { get; set; }
 
         public string Email { get; set; }
 

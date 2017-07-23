@@ -56,7 +56,7 @@ namespace HansJuergenWeb.MessageHandlers
             {
                 Description = message.Description,
                 Email = message.Email,
-                FileName = message.FileName
+                FileNames = message.FileNames
             });
         }
 

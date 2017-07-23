@@ -16,7 +16,7 @@ namespace POC
             {
                 var message = new FileUploadedEvent
                 {
-                    FileName = "dummy.txt",
+                    FileNames =new []{ "dummy.txt" } ,
                     Email = "foo@bar.org",
                     Description = "Lorem ipsum"
 
