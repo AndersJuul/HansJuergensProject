@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Web.Mvc;
 using EasyNetQ;
 using HansJuergenWeb.Contracts;
@@ -24,7 +25,7 @@ namespace HansJuergenWeb.WebHJ.Controllers
         {
             ViewBag.Message = "Error uploading.";
 
-            return View("Error");
+            return View("Error",uploadErrorModel);
         }
 
         // GET: Upload
@@ -32,7 +33,8 @@ namespace HansJuergenWeb.WebHJ.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return Error(new UploadErrorModel());
+                var enumerable = ModelState.Select(x => x.Value.Errors.First().ErrorMessage);
+                return Error(new UploadErrorModel{Errors =  enumerable});
             }
             var guid = Guid.NewGuid();
             Log.Logger.Information("Received request to upload: {uploadId}", guid);
