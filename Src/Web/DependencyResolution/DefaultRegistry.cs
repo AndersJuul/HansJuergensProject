@@ -15,6 +15,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
+using HansJuergenWeb.WebHJ.Controllers;
 using WebHJ;
 
 namespace HansJuergenWeb.WebHJ.DependencyResolution {
@@ -35,6 +36,8 @@ namespace HansJuergenWeb.WebHJ.DependencyResolution {
                     scan.TheCallingAssembly();
                     scan.WithDefaultConventions();
 					scan.With(new ControllerConvention());
+                    scan.AddAllTypesOf(typeof(IValidateUpload))
+                        .NameBy(type => type.Name.ToLower());
                 });
             For<IBus>().Use(bus);
         }

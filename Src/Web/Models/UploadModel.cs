@@ -11,5 +11,9 @@ namespace HansJuergenWeb.WebHJ.Models
         [Required(ErrorMessage = "{0} is required")]
         [Display(Name = "Email")]
         public string Email { get; set; }
+
+        [Required(ErrorMessage = "{0} is required")]
+        [Display(Name = "Allergene")]
+        public string Allergene { get; set; }
     }
 }

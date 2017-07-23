@@ -23,5 +23,12 @@ namespace HansJuergenWeb.WebHJ.Controllers
             return View();
         }
 
+        public ActionResult Thanks()
+        {
+            ViewBag.Message = "Thanks!";
+
+            return View("Thanks");
+        }
+
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Web.Mvc;
 using EasyNetQ;
 using HansJuergenWeb.Contracts;
@@ -25,24 +24,29 @@ namespace HansJuergenWeb.WebHJ.Controllers
         {
             ViewBag.Message = "Error uploading.";
 
-            return View("Error",uploadErrorModel);
+            return View("Error", uploadErrorModel);
         }
 
-        // GET: Upload
         public ActionResult Post(UploadModel uploadModel)
         {
-            if (!ModelState.IsValid)
+            //if (!ModelState.IsValid)
+            //{
+            //    var enumerable = ModelState.Select(x => x.Value.Errors.First().ErrorMessage);
+            //    return Error(new UploadErrorModel{Errors =  enumerable});
+            //}
+
+            if (Request.Files.Count == 0)
             {
-                var enumerable = ModelState.Select(x => x.Value.Errors.First().ErrorMessage);
-                return Error(new UploadErrorModel{Errors =  enumerable});
+                return Error(new UploadErrorModel {Errors = new[] {"At least one file must be uploaded!"}});
             }
+
             var guid = Guid.NewGuid();
             Log.Logger.Information("Received request to upload: {uploadId}", guid);
 
             var uploadDir = @"c:\temp\hjuploads\";
-            var pathToSave = Path.Combine(uploadDir, guid.ToString());
+            var dataFolder = Path.Combine(uploadDir, guid.ToString());
 
-            Directory.CreateDirectory(pathToSave);
+            Directory.CreateDirectory(dataFolder);
 
             var fileNames = new List<string>();
             for (var i = 0; i < Request.Files.Count; i++)
@@ -50,29 +54,33 @@ namespace HansJuergenWeb.WebHJ.Controllers
                 if (Request.Files[i].ContentLength == 0) continue;
 
                 var filename = Path.GetFileName(Request.Files[i].FileName);
-                Request.Files[i].SaveAs(Path.Combine(pathToSave, filename));
+                Request.Files[i].SaveAs(Path.Combine(dataFolder, filename));
                 fileNames.Add(filename);
             }
 
             foreach (var uploadValidator in _uploadValidators)
             {
-                var validationResult = uploadValidator.Validate(uploadModel, pathToSave, fileNames);
+                var validationResult = uploadValidator.Validate(uploadModel, dataFolder, fileNames);
+                if (validationResult != null)
+                {
+                    return Error(new UploadErrorModel {Errors = new[] {validationResult.ErrorMessage}});
+                }
             }
 
-            Log.Logger.Information("Received file: {rfile}", fileNames.ToArray());
+            Log.Logger.Information("Done writing and validating the following uploaded files: {uploadedFiles}", fileNames.ToArray());
 
             var message = new FileUploadedEvent
             {
                 FileNames = fileNames.ToArray(),
                 Email = uploadModel.Email,
                 Description = uploadModel.Description,
-                Id = guid
+                Id = guid,
+                DataFolder = dataFolder
             };
             _bus.Publish(message);
+            Log.Logger.Information("Message broadcasted that files were uploaded: {@message}", message);
 
-            Log.Logger.Information("Message broadcasted that file was uploaded: {@message}", message);
-
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Thanks", "Home");
         }
     }
 }

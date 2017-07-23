@@ -189,8 +189,9 @@
     <Compile Include="AppSettings.cs" />
     <Compile Include="App_Start\StructuremapMvc.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\IValidateUpload.cs" />
+    <Compile Include="Validators\IValidateUpload.cs" />
     <Compile Include="Controllers\UploadController.cs" />
+    <Compile Include="Validators\ValidateUploadSufficientFiles.cs" />
     <Compile Include="DependencyResolution\ControllerConvention.cs" />
     <Compile Include="DependencyResolution\DefaultRegistry.cs" />
     <Compile Include="DependencyResolution\IoC.cs" />
@@ -238,6 +239,7 @@
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Upload\Error.cshtml" />
+    <Content Include="Views\Home\Thanks.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

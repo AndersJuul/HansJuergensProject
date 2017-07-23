@@ -11,5 +11,7 @@ namespace HansJuergenWeb.Contracts
         public string Description { get; set; }
 
         public Guid Id { get; set; }
+
+        public string DataFolder { get; set; }
     }
 }

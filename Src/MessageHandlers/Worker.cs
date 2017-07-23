@@ -1,21 +1,25 @@
 ﻿using System;
+using System.Reflection;
 using System.Threading.Tasks;
+using Ajf.Nuget.Logging;
 using EasyNetQ;
+using EasyNetQ.AutoSubscribe;
 using HansJuergenWeb.Contracts;
 using Serilog;
+using StructureMap;
 
 namespace HansJuergenWeb.MessageHandlers
 {
     public class Worker
     {
         private readonly IAppSettings _appSettings;
-        private readonly IRadapter _radapter;
         private IBus _bus;
+        private IRadapter _radapter;
+        private  IMailSender _mailSender;
 
-        public Worker(IAppSettings appSettings, IRadapter radapter)
+        public Worker(IAppSettings appSettings)
         {
             _appSettings = appSettings;
-            _radapter = radapter;
         }
 
         public bool WorkDone { get; set; }
@@ -24,7 +28,13 @@ namespace HansJuergenWeb.MessageHandlers
         {
             try
             {
-                SetupSubscriptions();
+                _bus = RabbitHutch.CreateBus(_appSettings.EasyNetQConfig);
+                _radapter = new Radapter();
+                _mailSender=new MailSender();
+
+                _bus.SubscribeAsync<FileUploadedEvent>("ProcessUploadedFileThroughR", ProcessUploadedFileThroughR);
+                _bus.SubscribeAsync<FileUploadedEvent>("SendEmailConfirmingUpload", SendEmailConfirmingUpload);
+
             }
             catch (Exception ex)
             {
@@ -33,56 +43,28 @@ namespace HansJuergenWeb.MessageHandlers
             }
         }
 
-        private void SetupSubscriptions()
+        private Task SendEmailConfirmingUpload(FileUploadedEvent message)
         {
-            _bus = RabbitHutch.CreateBus(_appSettings.EasyNetQConfig);
+            Log.Logger.Information("Message received in SendEmailConfirmingUpload: {@fileUploadedEvent}", message);
 
-            _bus.SubscribeAsync<FileUploadedEvent>("SendEmailConfirmingUpload",
-                message => Task.Factory.StartNew(SendEmailConfirmingUpload)
-                    .ContinueWith(DefaultErrorHandling()));
-
-            _bus.SubscribeAsync<FileUploadedEvent>("ProcessUploadedFileThroughR",
-                message => Task.Factory.StartNew(() => ProcessUploadedFileThroughR(message))
-                    .ContinueWith(DefaultErrorHandling()));
+            var ajf = "andersjuulsfirma@gmail.com";
+            return _mailSender.SendMailAsync(ajf, ajf, ajf, "Notification: Files uploaded", "");
         }
 
-        private void ProcessUploadedFileThroughR(FileUploadedEvent message)
+        private Task ProcessUploadedFileThroughR(FileUploadedEvent message)
         {
-            Log.Logger.Information("Message received <Faking process through R>");
+            Log.Logger.Information("Message received ProcessUploadedFileThroughR");
 
-            _radapter.BatchProcess(@".\TheScript.R",message.Id);
+            _radapter.BatchProcess(@".\TheScript.R", message.Id);
 
             _bus.PublishAsync(new FileProcessedEvent
             {
                 Description = message.Description,
                 Email = message.Email,
-                FileNames = message.FileNames
+                FileNames = message.FileNames,
+                DataFolder = message.DataFolder
             });
-        }
-
-        private static Action<Task> DefaultErrorHandling()
-        {
-            return task =>
-            {
-                if (task.IsCompleted && !task.IsFaulted)
-                {
-                    //Log.Logger.Information("Everything worked out ok");
-                }
-                else
-                {
-                    // Dont catch this, it is caught further up the heirarchy and results in being sent to the default error queue
-                    // on the broker
-                    Log.Logger.Information("Message exception");
-
-                    throw new EasyNetQException(
-                        "Message processing exception - look in the default error queue (broker)");
-                }
-            };
-        }
-
-        private void SendEmailConfirmingUpload()
-        {
-            Log.Logger.Information("Message received <Faking send confirmation>");
+            return Task.FromResult("");
         }
 
         public void Stop()

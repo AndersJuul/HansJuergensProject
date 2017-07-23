@@ -1,7 +1,4 @@
-﻿using System;
-using EasyNetQ;
-
-namespace HansJuergenWeb.MessageHandlers
+﻿namespace HansJuergenWeb.MessageHandlers
 {
     public interface IAppSettings
     {

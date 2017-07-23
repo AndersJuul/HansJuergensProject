@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Ajf.Nuget.Logging;
-using HansJuergenWeb.MessageHandlers;
 using Serilog;
 using Topshelf;
 
-namespace MessageHandlers
+namespace HansJuergenWeb.MessageHandlers
 {
     internal class Program
     {
@@ -20,18 +15,13 @@ namespace MessageHandlers
             {
                 var appSettings = new AppSettings();
 
-                var radapter = new Radapter();
-
                 HostFactory.Run(x => //1
                 {
                     x.Service<Worker>(s => //2
                     {
                         try
                         {
-                            s.ConstructUsing(name =>
-                            {
-                                return new Worker(appSettings, radapter);
-                            }); //3
+                            s.ConstructUsing(name => { return new Worker(appSettings); }); //3
                             s.WhenStarted(tc =>
                             {
                                 Log.Logger.Information("Starting service");
@@ -69,7 +59,7 @@ namespace MessageHandlers
                             throw;
                         }
                     });
-                    x.RunAs(appSettings.RunAsUserName,appSettings.RunAsPassword); //6
+                    x.RunAs(appSettings.RunAsUserName, appSettings.RunAsPassword); //6
 
                     x.SetDescription(appSettings.Description); //7
                     x.SetDisplayName(appSettings.DisplayName); //8
@@ -84,22 +74,3 @@ namespace MessageHandlers
         }
     }
 }
-//_bus.SubscribeAsync<MessageType>("Queue_Identifier",
-//message => Task.Factory.StartNew(() =>
-//{
-//// Perform some actions here
-//// If there is a exception it will result in a task complete but task faulted which
-//// is dealt with below in the continuation
-//}).ContinueWith(task =>
-//{
-//if (task.IsCompleted && !task.IsFaulted)
-//{
-//// Everything worked out ok
-//}
-//else
-//{
-//// Dont catch this, it is caught further up the heirarchy and results in being sent to the default error queue
-//// on the broker
-//throw new EasyNetQException("Message processing exception - look in the default error queue (broker)");
-//}
-//}));
