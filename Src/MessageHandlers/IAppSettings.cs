@@ -8,5 +8,6 @@
         string SubjectConfirmation { get; set; }
         string SubjectResults { get; set; }
         string UploadDir { get; set; }
+        string FlowCytoConnection { get; set; }
     }
 }

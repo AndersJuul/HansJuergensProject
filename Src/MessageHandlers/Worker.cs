@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data.SqlClient;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Ajf.Nuget.Logging;
 using AutoMapper;
+using Dapper;
 using EasyNetQ;
 using HansJuergenWeb.Contracts;
 using Serilog;
@@ -78,6 +80,14 @@ namespace HansJuergenWeb.MessageHandlers
         private async Task UpdateSubscriptionDatabase(FileProcessedEvent message)
         {
             Log.Logger.Information("Message received in UpdateSubscriptionDatabase FAKING : {@message}", message);
+
+            var sqlConnection = new SqlConnection(_appSettings.FlowCytoConnection);
+
+            var allergeneid = sqlConnection
+                .Query<int>($"select Id from Allergenes where Name='{message.Allergene}'")
+                .SingleOrDefault();
+
+            Log.Logger.Information("Found Allergene Id to be {allergeneid}",allergeneid);
 
             await Task.FromResult(0);
         }

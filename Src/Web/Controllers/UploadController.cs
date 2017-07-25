@@ -77,7 +77,8 @@ namespace HansJuergenWeb.WebHJ.Controllers
                 Email = uploadModel.Email,
                 Description = uploadModel.Description,
                 Id = guid,
-                DataFolder = dataFolder
+                DataFolder = dataFolder,
+                Allergene = uploadModel.Allergene
             };
             _bus.Publish(fileUploadedEvent);
             Log.Logger.Information("Message broadcasted that files were uploaded: {@message}", fileUploadedEvent);
