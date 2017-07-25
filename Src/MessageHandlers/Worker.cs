@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -49,6 +51,26 @@ namespace HansJuergenWeb.MessageHandlers
         private async Task RemoveOldDataFolders(FileProcessedEvent message)
         {
             Log.Logger.Information("Message received in RemoveOldDataFolders : {@message}", message);
+
+            var directories = Directory.GetDirectories(_appSettings.UploadDir);
+            foreach (var directory in directories)
+            {
+                var creationTime = Directory.GetCreationTime(directory);
+                var timeSpan = DateTime.Now.Subtract(creationTime);
+                var daysToKeepDataFiles =Double.Parse(ConfigurationManager.AppSettings["DaysToKeepDataFiles"], CultureInfo.InvariantCulture);
+                if (timeSpan > TimeSpan.FromDays(daysToKeepDataFiles))
+                {
+                    Log.Logger.Information($"Time to remove old folder: {directory} from {creationTime}");
+
+                    var files = Directory.GetFiles(directory);
+                    foreach (var file in files)
+                    {
+                        File.Delete(file);
+                    }
+                    Directory.Delete(directory);
+                }
+
+            }
 
             await Task.FromResult(0);
         }
