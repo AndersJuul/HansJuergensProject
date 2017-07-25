@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace HansJuergenWeb.WebHJ.Models
+namespace HansJuergenWeb.Contracts
 {
     public class UploadErrorModel
     {

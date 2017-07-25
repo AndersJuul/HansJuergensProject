@@ -16,6 +16,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using HansJuergenWeb.WebHJ.Controllers;
+using HansJuergenWeb.WebHJ.Validators;
 
 namespace HansJuergenWeb.WebHJ.DependencyResolution {
     using StructureMap.Configuration.DSL;

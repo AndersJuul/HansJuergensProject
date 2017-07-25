@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace HansJuergenWeb.WebHJ.Models
+namespace HansJuergenWeb.Contracts
 {
     public class UploadModel
     {

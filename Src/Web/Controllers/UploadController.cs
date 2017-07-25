@@ -4,7 +4,7 @@ using System.IO;
 using System.Web.Mvc;
 using EasyNetQ;
 using HansJuergenWeb.Contracts;
-using HansJuergenWeb.WebHJ.Models;
+using HansJuergenWeb.WebHJ.Validators;
 using Serilog;
 
 namespace HansJuergenWeb.WebHJ.Controllers
@@ -31,6 +31,9 @@ namespace HansJuergenWeb.WebHJ.Controllers
 
         public ActionResult Post(UploadModel uploadModel)
         {
+            if(uploadModel==null)
+                return Error(new UploadErrorModel { Errors = new string[]{"uploadmodel is null"} });
+
             //if (!ModelState.IsValid)
             //{
             //    var enumerable = ModelState.Select(x => x.Value.Errors.First().ErrorMessage);

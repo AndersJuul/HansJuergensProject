@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using HansJuergenWeb.WebHJ.Controllers;
-using HansJuergenWeb.WebHJ.Models;
+using HansJuergenWeb.Contracts;
 
 namespace HansJuergenWeb.WebHJ.Validators
 {

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using HansJuergenWeb.WebHJ.Models;
+using HansJuergenWeb.Contracts;
 
-namespace HansJuergenWeb.WebHJ.Controllers
+namespace HansJuergenWeb.WebHJ.Validators
 {
     public interface IValidateUpload
     {

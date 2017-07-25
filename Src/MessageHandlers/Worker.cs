@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Ajf.Nuget.Logging;
 using AutoMapper;
@@ -54,6 +55,8 @@ namespace HansJuergenWeb.MessageHandlers
         {
             Log.Logger.Information("Message received in RemoveOldDataFolders : {@message}", message);
 
+            Thread.Sleep(3000);
+
             var directories = Directory.GetDirectories(_appSettings.UploadDir);
             foreach (var directory in directories)
             {
@@ -81,6 +84,8 @@ namespace HansJuergenWeb.MessageHandlers
         {
             Log.Logger.Information("Message received in UpdateSubscriptionDatabase FAKING : {@message}", message);
 
+            Thread.Sleep(3000);
+
             var sqlConnection = new SqlConnection(_appSettings.FlowCytoConnection);
 
             var allergeneid = sqlConnection
@@ -97,6 +102,8 @@ namespace HansJuergenWeb.MessageHandlers
             try
             {
                 Log.Logger.Information("Message received in SendEmailConfirmingUpload: {@message}", message);
+
+                Thread.Sleep(3000);
 
                 await DoMailSending("ResultsMailTemplate.html", message.Email, message.DataFolder, _appSettings.SubjectResults + " " + message.Id)
                     .ConfigureAwait(false);
@@ -116,6 +123,8 @@ namespace HansJuergenWeb.MessageHandlers
             try
             {
                 Log.Logger.Information("Message received in SendEmailConfirmingUpload: {@message}", message);
+
+                Thread.Sleep(3000);
 
                 await DoMailSending("ConfirmationMailTemplate.html", message.Email, message.DataFolder, _appSettings.SubjectConfirmation + " " +message.Id)
                     .ConfigureAwait(false);
@@ -176,6 +185,8 @@ namespace HansJuergenWeb.MessageHandlers
         private async Task ProcessUploadedFileThroughR(FileReadyForProcessingEvent message)
         {
             Log.Logger.Information("Message received ProcessUploadedFileThroughR : {@message}", message);
+
+            Thread.Sleep(3000);
 
             _radapter.BatchProcess(@".\TheScript.R", message.Id, _appSettings.UploadDir);
 
