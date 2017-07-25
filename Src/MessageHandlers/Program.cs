@@ -1,5 +1,7 @@
 ﻿using System;
 using Ajf.Nuget.Logging;
+using AutoMapper;
+using HansJuergenWeb.Contracts;
 using Serilog;
 using Topshelf;
 
@@ -13,6 +15,13 @@ namespace HansJuergenWeb.MessageHandlers
 
             try
             {
+                Mapper.Initialize(cfg =>
+                {
+                    cfg.CreateMap<FileProcessedEvent, FileReadyForCleanupEvent>();
+                    cfg.CreateMap<FileUploadedEvent, FileReadyForProcessingEvent>();
+                    cfg.CreateMap<FileReadyForProcessingEvent, FileProcessedEvent>();
+                });
+
                 var appSettings = new AppSettings();
 
                 HostFactory.Run(x => //1

@@ -1,6 +1,6 @@
 ﻿namespace HansJuergenWeb.Contracts
 {
-    public class FileProcessedEvent:BaseEvent
+    public class FileReadyForCleanupEvent:BaseEvent
     {
     }
 }

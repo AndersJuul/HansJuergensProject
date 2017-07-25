@@ -13,11 +13,13 @@ namespace HansJuergenWeb.WebHJ.Controllers
     {
         private readonly IBus _bus;
         private readonly IEnumerable<IValidateUpload> _uploadValidators;
+        private readonly IAppSettings _appSettings;
 
-        public UploadController(IBus bus, IEnumerable<IValidateUpload> uploadValidators)
+        public UploadController(IBus bus, IEnumerable<IValidateUpload> uploadValidators,IAppSettings appSettings)
         {
             _bus = bus;
             _uploadValidators = uploadValidators;
+            _appSettings = appSettings;
         }
 
         public ActionResult Error(UploadErrorModel uploadErrorModel)
@@ -43,7 +45,7 @@ namespace HansJuergenWeb.WebHJ.Controllers
             var guid = Guid.NewGuid();
             Log.Logger.Information("Received request to upload: {uploadId}", guid);
 
-            var uploadDir = @"c:\temp\hjuploads\";
+            var uploadDir = _appSettings.UploadDir;
             var dataFolder = Path.Combine(uploadDir, guid.ToString());
 
             Directory.CreateDirectory(dataFolder);
@@ -69,7 +71,7 @@ namespace HansJuergenWeb.WebHJ.Controllers
 
             Log.Logger.Information("Done writing and validating the following uploaded files: {uploadedFiles}", fileNames.ToArray());
 
-            var message = new FileUploadedEvent
+            var fileUploadedEvent = new FileUploadedEvent
             {
                 FileNames = fileNames.ToArray(),
                 Email = uploadModel.Email,
@@ -77,8 +79,8 @@ namespace HansJuergenWeb.WebHJ.Controllers
                 Id = guid,
                 DataFolder = dataFolder
             };
-            _bus.Publish(message);
-            Log.Logger.Information("Message broadcasted that files were uploaded: {@message}", message);
+            _bus.Publish(fileUploadedEvent);
+            Log.Logger.Information("Message broadcasted that files were uploaded: {@message}", fileUploadedEvent);
 
             return RedirectToAction("Thanks", "Home");
         }

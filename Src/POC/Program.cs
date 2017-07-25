@@ -14,14 +14,13 @@ namespace POC
         {
             using (var bus = RabbitHutch.CreateBus("host=ajf-elastic-01;username=anders;password=21Bananer;timeout=10"))
             {
-                var message = new FileUploadedEvent
+                bus.Publish(new FileUploadedEvent
                 {
-                    FileNames =new []{ "dummy.txt" } ,
+                    FileNames = new[] { "dummy.txt" },
                     Email = "foo@bar.org",
                     Description = "Lorem ipsum"
 
-                };
-                bus.Publish(message);
+                });
             }
 
         }

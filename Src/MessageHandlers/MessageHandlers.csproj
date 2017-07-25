@@ -38,8 +38,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Ajf.Nuget.Logging, Version=1.0.0.38, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Ajf.Nuget.Logging.1.0.0.38\lib\net47\Ajf.Nuget.Logging.dll</HintPath>
+    <Reference Include="Ajf.Nuget.Logging, Version=1.0.0.40, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ajf.Nuget.Logging.1.0.0.40\lib\net47\Ajf.Nuget.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="AutoMapper, Version=6.1.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.6.1.1\lib\net45\AutoMapper.dll</HintPath>
     </Reference>
     <Reference Include="EasyNetQ, Version=1.1.4.506, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\EasyNetQ.1.1.4.506\lib\net45\EasyNetQ.dll</HintPath>
@@ -98,8 +101,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IRadapter.cs" />
-    <Compile Include="Handlers\ProcessUploadedFileThroughRHandler.cs" />
-    <Compile Include="Handlers\SendEmailConfirmingAfterFileUploadHandler.cs" />
     <Compile Include="Radapter.cs" />
     <Compile Include="StructureMapContainerWrapper.cs" />
     <Compile Include="Worker.cs" />
@@ -109,8 +110,16 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
+    <Content Include="ResultsMailTemplate.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ConfirmationMailTemplate.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="TheScript.R">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

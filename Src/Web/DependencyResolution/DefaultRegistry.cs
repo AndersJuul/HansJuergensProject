@@ -16,7 +16,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using HansJuergenWeb.WebHJ.Controllers;
-using WebHJ;
 
 namespace HansJuergenWeb.WebHJ.DependencyResolution {
     using StructureMap.Configuration.DSL;
@@ -40,6 +39,7 @@ namespace HansJuergenWeb.WebHJ.DependencyResolution {
                         .NameBy(type => type.Name.ToLower());
                 });
             For<IBus>().Use(bus);
+            For<IAppSettings>().Use(appSettings);
         }
 
         #endregion

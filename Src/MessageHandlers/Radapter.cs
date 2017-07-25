@@ -8,11 +8,10 @@ namespace HansJuergenWeb.MessageHandlers
 {
     public class Radapter : IRadapter
     {
-        public void BatchProcess(string pathToScript, Guid messageId)
+        public void BatchProcess(string pathToScript, Guid messageId, string uploadDir)
         {
             Log.Logger.Information("Starting R processing...");
 
-            var uploadDir = @"c:\temp\hjuploads\";
             var pathToData = Path.Combine(uploadDir, messageId.ToString());
 
             var pathToR = @"C:\Program Files\R\R-3.4.1\bin\R.exe";
