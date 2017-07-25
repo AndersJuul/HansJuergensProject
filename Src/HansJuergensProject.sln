@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "Contracts\Cont
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageHandlers", "MessageHandlers\MessageHandlers.csproj", "{4ACBDFFD-CC35-44F9-A11B-DF48E23747B1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Migrations", "Migrations\Migrations.csproj", "{4998D813-316E-4281-828C-F1A3B7EFADE1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{4ACBDFFD-CC35-44F9-A11B-DF48E23747B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4ACBDFFD-CC35-44F9-A11B-DF48E23747B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4ACBDFFD-CC35-44F9-A11B-DF48E23747B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4998D813-316E-4281-828C-F1A3B7EFADE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4998D813-316E-4281-828C-F1A3B7EFADE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4998D813-316E-4281-828C-F1A3B7EFADE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4998D813-316E-4281-828C-F1A3B7EFADE1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
