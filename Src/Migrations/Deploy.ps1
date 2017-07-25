@@ -1,0 +1,1 @@
+﻿& .\Migrations.exe | Write-Host
