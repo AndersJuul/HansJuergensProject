@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Configuration;
 using System.Globalization;
 using System.IO;
@@ -39,12 +40,12 @@ namespace HansJuergenWeb.MessageHandlers
                 _radapter = new Radapter();
                 _mailSender = new MailSender();
 
-                _bus.SubscribeAsync<FileUploadedEvent>("SendEmailConfirmingUpload", SendEmailConfirmingUpload);
-                _bus.SubscribeAsync<FileReadyForProcessingEvent>("ProcessUploadedFileThroughR",
-                    ProcessUploadedFileThroughR);
-                _bus.SubscribeAsync<FileProcessedEvent>("SendEmailWithResults", SendEmailWithResults);
-                _bus.SubscribeAsync<FileProcessedEvent>("UpdateSubscriptionDatabase", UpdateSubscriptionDatabase);
-                _bus.SubscribeAsync<FileProcessedEvent>("RemoveOldDataFolders", RemoveOldDataFolders);
+                SubscriptionDone = false;
+
+                var backgroundWorker = new BackgroundWorker();
+                backgroundWorker.DoWork += BackgroundWorker_DoWork;
+                backgroundWorker.RunWorkerAsync();
+
             }
             catch (Exception ex)
             {
@@ -53,11 +54,25 @@ namespace HansJuergenWeb.MessageHandlers
             }
         }
 
+        public bool SubscriptionDone { get; set; }
+
+        private void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            _bus.SubscribeAsync<FileUploadedEvent>("SendEmailConfirmingUpload", SendEmailConfirmingUpload);
+            _bus.SubscribeAsync<FileReadyForProcessingEvent>("ProcessUploadedFileThroughR",
+                ProcessUploadedFileThroughR);
+            _bus.SubscribeAsync<FileProcessedEvent>("SendEmailWithResults", SendEmailWithResults);
+            _bus.SubscribeAsync<FileProcessedEvent>("UpdateSubscriptionDatabase", UpdateSubscriptionDatabase);
+            _bus.SubscribeAsync<FileProcessedEvent>("RemoveOldDataFolders", RemoveOldDataFolders);
+
+            SubscriptionDone = true;
+        }
+
         private async Task RemoveOldDataFolders(FileProcessedEvent message)
         {
             Log.Logger.Information("Message received in RemoveOldDataFolders : {@message}", message);
 
-            Thread.Sleep(3000);
+            while (!SubscriptionDone) ;
 
             var directories = Directory.GetDirectories(_appSettings.UploadDir);
             foreach (var directory in directories)
@@ -86,7 +101,7 @@ namespace HansJuergenWeb.MessageHandlers
             {
                 Log.Logger.Information("Message received in UpdateSubscriptionDatabase FAKING : {@message}", message);
 
-                Thread.Sleep(3000);
+                while (!SubscriptionDone) ;
 
                 if (string.IsNullOrEmpty(message.Email))
                 {
@@ -116,7 +131,7 @@ namespace HansJuergenWeb.MessageHandlers
             {
                 Log.Logger.Information("Message received in SendEmailWithResults: {@message}", message);
 
-                Thread.Sleep(3000);
+                while (!SubscriptionDone) ;
 
                 await DoMailSending("ResultsMailTemplate.html", message.Email, message.DataFolder,
                         _appSettings.SubjectResults + " " + message.Id)
@@ -138,7 +153,7 @@ namespace HansJuergenWeb.MessageHandlers
             {
                 Log.Logger.Information("Message received in SendEmailConfirmingUpload: {@message}", message);
 
-                Thread.Sleep(3000);
+                while (!SubscriptionDone) ;
 
                 await DoMailSending("ConfirmationMailTemplate.html", message.Email, message.DataFolder,
                         _appSettings.SubjectConfirmation + " " + message.Id)
@@ -202,7 +217,7 @@ namespace HansJuergenWeb.MessageHandlers
         {
             Log.Logger.Information("Message received ProcessUploadedFileThroughR : {@message}", message);
 
-            Thread.Sleep(3000);
+            while (!SubscriptionDone) ;
 
             _radapter.BatchProcess(@".\TheScript.R", message.Id, _appSettings.UploadDir);
 
