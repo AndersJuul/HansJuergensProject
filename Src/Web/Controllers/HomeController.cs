@@ -1,4 +1,5 @@
 ﻿using System.Web.Mvc;
+using HansJuergenWeb.Contracts;
 
 namespace HansJuergenWeb.WebHJ.Controllers
 {
@@ -23,7 +24,7 @@ namespace HansJuergenWeb.WebHJ.Controllers
             return View();
         }
 
-        public ActionResult Thanks()
+        public ActionResult Thanks(UploadModel uploadModel)
         {
             ViewBag.Message = "Your data has been submitted. If you supplied an email address, you should receive an email confirmation as well as the results of processing the data through R.";
 

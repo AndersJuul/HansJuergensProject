@@ -114,7 +114,7 @@ namespace HansJuergenWeb.MessageHandlers
         {
             try
             {
-                Log.Logger.Information("Message received in SendEmailConfirmingUpload: {@message}", message);
+                Log.Logger.Information("Message received in SendEmailWithResults: {@message}", message);
 
                 Thread.Sleep(3000);
 
