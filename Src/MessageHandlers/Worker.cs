@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data.SqlClient;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -9,10 +8,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Ajf.Nuget.Logging;
 using AutoMapper;
-using Dapper;
 using EasyNetQ;
 using HansJuergenWeb.Contracts;
 using Serilog;
+using Serilog.Context;
 
 namespace HansJuergenWeb.MessageHandlers
 {
@@ -22,10 +21,12 @@ namespace HansJuergenWeb.MessageHandlers
         private IBus _bus;
         private IMailSender _mailSender;
         private IRadapter _radapter;
+        private readonly ISubscriptionManager _subscriptionManager;
 
-        public Worker(IAppSettings appSettings)
+        public Worker(IAppSettings appSettings, ISubscriptionManager subscriptionManager)
         {
             _appSettings = appSettings;
+            _subscriptionManager = subscriptionManager;
         }
 
         public bool WorkDone { get; set; }
@@ -39,7 +40,8 @@ namespace HansJuergenWeb.MessageHandlers
                 _mailSender = new MailSender();
 
                 _bus.SubscribeAsync<FileUploadedEvent>("SendEmailConfirmingUpload", SendEmailConfirmingUpload);
-                _bus.SubscribeAsync<FileReadyForProcessingEvent>("ProcessUploadedFileThroughR",ProcessUploadedFileThroughR);
+                _bus.SubscribeAsync<FileReadyForProcessingEvent>("ProcessUploadedFileThroughR",
+                    ProcessUploadedFileThroughR);
                 _bus.SubscribeAsync<FileProcessedEvent>("SendEmailWithResults", SendEmailWithResults);
                 _bus.SubscribeAsync<FileProcessedEvent>("UpdateSubscriptionDatabase", UpdateSubscriptionDatabase);
                 _bus.SubscribeAsync<FileProcessedEvent>("RemoveOldDataFolders", RemoveOldDataFolders);
@@ -62,19 +64,17 @@ namespace HansJuergenWeb.MessageHandlers
             {
                 var creationTime = Directory.GetCreationTime(directory);
                 var timeSpan = DateTime.Now.Subtract(creationTime);
-                var daysToKeepDataFiles =Double.Parse(ConfigurationManager.AppSettings["DaysToKeepDataFiles"], CultureInfo.InvariantCulture);
+                var daysToKeepDataFiles = double.Parse(ConfigurationManager.AppSettings["DaysToKeepDataFiles"],
+                    CultureInfo.InvariantCulture);
                 if (timeSpan > TimeSpan.FromDays(daysToKeepDataFiles))
                 {
                     Log.Logger.Information($"Time to remove old folder: {directory} from {creationTime}");
 
                     var files = Directory.GetFiles(directory);
                     foreach (var file in files)
-                    {
                         File.Delete(file);
-                    }
                     Directory.Delete(directory);
                 }
-
             }
 
             await Task.FromResult(0);
@@ -82,19 +82,32 @@ namespace HansJuergenWeb.MessageHandlers
 
         private async Task UpdateSubscriptionDatabase(FileProcessedEvent message)
         {
-            Log.Logger.Information("Message received in UpdateSubscriptionDatabase FAKING : {@message}", message);
+            try
+            {
+                Log.Logger.Information("Message received in UpdateSubscriptionDatabase FAKING : {@message}", message);
 
-            Thread.Sleep(3000);
+                Thread.Sleep(3000);
 
-            var sqlConnection = new SqlConnection(_appSettings.FlowCytoConnection);
+                if (string.IsNullOrEmpty(message.Email))
+                {
+                    Log.Logger.Information("Skipping subscription update as no email is supplied");
+                    return;
+                }
+                if (string.IsNullOrEmpty(message.Allergene))
+                {
+                    Log.Logger.Information("Skipping subscription update as no allergene is supplied");
+                    return;
+                }
 
-            var allergeneid = sqlConnection
-                .Query<int>($"select Id from Allergenes where Name='{message.Allergene}'")
-                .SingleOrDefault();
-
-            Log.Logger.Information("Found Allergene Id to be {allergeneid}",allergeneid);
-
-            await Task.FromResult(0);
+                await _subscriptionManager
+                    .AddUploaderToAllergeneSubscriptionAsync(message.Email, message.Allergene)
+                    .ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         private async Task SendEmailWithResults(FileProcessedEvent message)
@@ -105,7 +118,8 @@ namespace HansJuergenWeb.MessageHandlers
 
                 Thread.Sleep(3000);
 
-                await DoMailSending("ResultsMailTemplate.html", message.Email, message.DataFolder, _appSettings.SubjectResults + " " + message.Id)
+                await DoMailSending("ResultsMailTemplate.html", message.Email, message.DataFolder,
+                        _appSettings.SubjectResults + " " + message.Id)
                     .ConfigureAwait(false);
 
                 await _bus.PublishAsync(Mapper.Map<FileReadyForCleanupEvent>(message))
@@ -113,7 +127,7 @@ namespace HansJuergenWeb.MessageHandlers
             }
             catch (Exception e)
             {
-                Log.Logger.Error(e,"Error during results sending");
+                Log.Logger.Error(e, "Error during results sending");
                 throw;
             }
         }
@@ -126,7 +140,8 @@ namespace HansJuergenWeb.MessageHandlers
 
                 Thread.Sleep(3000);
 
-                await DoMailSending("ConfirmationMailTemplate.html", message.Email, message.DataFolder, _appSettings.SubjectConfirmation + " " +message.Id)
+                await DoMailSending("ConfirmationMailTemplate.html", message.Email, message.DataFolder,
+                        _appSettings.SubjectConfirmation + " " + message.Id)
                     .ConfigureAwait(false);
 
                 await _bus.PublishAsync(Mapper.Map<FileReadyForProcessingEvent>(message))
@@ -134,12 +149,13 @@ namespace HansJuergenWeb.MessageHandlers
             }
             catch (Exception e)
             {
-                Log.Logger.Error(e,"Error during email confirmation sending");
+                Log.Logger.Error(e, "Error during email confirmation sending");
                 throw;
             }
         }
 
-        private async Task DoMailSending(string templateName, string messageEmail, string messageDataFolder, string subject)
+        private async Task DoMailSending(string templateName, string messageEmail, string messageDataFolder,
+            string subject)
         {
             try
             {

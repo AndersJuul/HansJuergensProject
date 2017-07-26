@@ -23,6 +23,8 @@ namespace HansJuergenWeb.MessageHandlers
                 });
 
                 var appSettings = new AppSettings();
+                var repository = new Repository(appSettings);
+                var subscriptionManager = new SubscriptionManager(repository);
 
                 HostFactory.Run(x => //1
                 {
@@ -30,7 +32,10 @@ namespace HansJuergenWeb.MessageHandlers
                     {
                         try
                         {
-                            s.ConstructUsing(name => { return new Worker(appSettings); }); //3
+                            s.ConstructUsing(name =>
+                            {
+                                return new Worker(appSettings, subscriptionManager);
+                            }); //3
                             s.WhenStarted(tc =>
                             {
                                 Log.Logger.Information("Starting service");

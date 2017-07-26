@@ -103,9 +103,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ISubscriptionManager.cs" />
+    <Compile Include="Repository.cs" />
     <Compile Include="IRadapter.cs" />
+    <Compile Include="IRepository.cs" />
     <Compile Include="Radapter.cs" />
     <Compile Include="StructureMapContainerWrapper.cs" />
+    <Compile Include="SubscriptionManager.cs" />
     <Compile Include="Worker.cs" />
     <Compile Include="AppSettings.cs" />
     <Compile Include="IAppSettings.cs" />
