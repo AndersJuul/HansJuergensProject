@@ -22,7 +22,8 @@ namespace HansJuergenWeb.WebHJ.DependencyResolution {
     using StructureMap.Configuration.DSL;
     using StructureMap.Graph;
     using EasyNetQ;
-	
+    using StructureMap;
+
     public class DefaultRegistry : Registry {
         #region Constructors and Destructors
 

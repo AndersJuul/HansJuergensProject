@@ -114,9 +114,12 @@ namespace HansJuergenWeb.MessageHandlers
                     return;
                 }
 
-                await _subscriptionManager
-                    .AddUploaderToAllergeneSubscriptionAsync(message.Email, message.Allergene)
-                    .ConfigureAwait(false);
+                lock (_subscriptionManager)
+                {
+                    _subscriptionManager
+                        .AddUploaderToAllergeneSubscriptionAsync(message.Email, message.Allergene)
+                        .Wait();
+                }
             }
             catch (Exception e)
             {
@@ -185,14 +188,16 @@ namespace HansJuergenWeb.MessageHandlers
                 var body = template.Select(x => x.Replace(folderContents, folderContentsOverview))
                     .Aggregate((current, next) => current + next);
 
-                await _mailSender.SendMailAsync(
+                var httpStatusCode = _mailSender.SendMailAsync(
                         messageEmail,
                         _appSettings.CcAddress,
                         _appSettings.SenderAddress,
                         subject,
                         body,
                         attachments)
-                    .ConfigureAwait(false);
+                    .Result;
+
+                Log.Logger.Information($"Result of sending mail: {httpStatusCode}");
             }
             catch (Exception e)
             {

@@ -23,6 +23,8 @@ namespace HansJuergenWeb.WebHJ.DependencyResolution {
     using StructureMap.Graph;
     using StructureMap.Pipeline;
     using StructureMap.TypeRules;
+    using StructureMap;
+    using StructureMap.Graph.Scanning;
 
     public class ControllerConvention : IRegistrationConvention {
         #region Public Methods and Operators
@@ -30,6 +32,17 @@ namespace HansJuergenWeb.WebHJ.DependencyResolution {
         public void Process(Type type, Registry registry) {
             if (type.CanBeCastTo<Controller>() && !type.IsAbstract) {
                 registry.For(type).LifecycleIs(new UniquePerRequestLifecycle());
+            }
+        }
+
+        public void ScanTypes(TypeSet types, Registry registry)
+        {
+            foreach (var type in types.FindTypes(TypeClassification.Concretes | TypeClassification.Closed))
+            {
+                if (type.CanBeCastTo<Controller>() && !type.IsAbstract)
+                {
+                    registry.For(type).LifecycleIs(new UniquePerRequestLifecycle());
+                }
             }
         }
 
