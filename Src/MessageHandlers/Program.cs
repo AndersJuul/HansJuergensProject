@@ -36,12 +36,19 @@ namespace HansJuergenWeb.MessageHandlers
                     {
                         try
                         {
+                            Log.Logger.Information("1");
                             var repository = new Repository(appSettings);
+                            Log.Logger.Information("2");
                             var subscriptionService = new SubscriptionService(repository);
+                            Log.Logger.Information("3");
                             var mailSender = new MailSender();
+                            Log.Logger.Information("4");
                             var radapter = new Radapter(appSettings);
+                            Log.Logger.Information("5");
                             var bus = RabbitHutch.CreateBus(appSettings.EasyNetQConfig);
+                            Log.Logger.Information("6");
                             var mailMessageService = new MailMessageService(appSettings, subscriptionService);
+                            Log.Logger.Information("7");
 
                             s.ConstructUsing(name => new Worker(bus,appSettings, 
                                 new HandleSendEmailConfirmingUpload(bus,mailMessageService,mailSender,appSettings),
