@@ -37,7 +37,7 @@ namespace HansJuergenWeb.MessageHandlers
                         {
                             s.ConstructUsing(name =>
                             {
-                                return new Worker(appSettings, subscriptionManager, folderBasedMailSender, radapter);
+                                return new Worker(appSettings, subscriptionManager, folderBasedMailSender, radapter, new MailMessageProvider(appSettings),mailSender );
                             }); //3
                             s.WhenStarted(tc =>
                             {

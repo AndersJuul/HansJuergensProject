@@ -21,13 +21,17 @@ namespace HansJuergenWeb.MessageHandlers
         private readonly ISubscriptionManager _subscriptionManager;
         private readonly IFolderBasedMailSender _folderBasedMailSender;
         private BackgroundWorker _backgroundWorkerCleaning;
+        private readonly IMailMessageProvider _mailMessageProvider;
+        private readonly IMailSender _mailSender;
 
-        public Worker(IAppSettings appSettings, ISubscriptionManager subscriptionManager, IFolderBasedMailSender folderBasedMailSender, IRadapter radapter)
+        public Worker(IAppSettings appSettings, ISubscriptionManager subscriptionManager, IFolderBasedMailSender folderBasedMailSender, IRadapter radapter, IMailMessageProvider mailMessageProvider, IMailSender mailSender)
         {
             _appSettings = appSettings;
             _subscriptionManager = subscriptionManager;
             _folderBasedMailSender = folderBasedMailSender;
             _radapter = radapter;
+            _mailMessageProvider = mailMessageProvider;
+            _mailSender = mailSender;
         }
 
         public bool WorkDone { get; set; }
@@ -165,9 +169,20 @@ namespace HansJuergenWeb.MessageHandlers
 
                 while (!SubscriptionDone) ;
 
-                await _folderBasedMailSender.DoMailSending("ResultsMailTemplate.html", message.Email, message.DataFolder,
-                        _appSettings.SubjectResults + " " + message.Id)
-                    .ConfigureAwait(false);
+                var body = _mailMessageProvider.GetTemplateBasedMailBody("ResultsMailTemplate.html", message.DataFolder, "*.*");
+                var attachmentPaths = Directory.GetFiles(message.DataFolder, "*.Rout");
+                var httpStatusCode = _mailSender.SendMailAsync(
+                        message.Email,
+                        _appSettings.CcAddress,
+                        _appSettings.SenderAddress,
+                        _appSettings.SubjectResults + " " + message.Id,
+                        body,
+                        attachmentPaths)
+                    .Result;
+
+                //await _folderBasedMailSender.DoMailSending("ResultsMailTemplate.html", message.Email, message.DataFolder,
+                //        _appSettings.SubjectResults + " " + message.Id)
+                //    .ConfigureAwait(false);
 
                 await _bus.PublishAsync(Mapper.Map<FileReadyForCleanupEvent>(message))
                     .ConfigureAwait(false);
@@ -187,9 +202,15 @@ namespace HansJuergenWeb.MessageHandlers
 
                 while (!SubscriptionDone) ;
 
-                await _folderBasedMailSender.DoMailSending("ConfirmationMailTemplate.html", message.Email, message.DataFolder,
-                        _appSettings.SubjectConfirmation + " " + message.Id)
-                    .ConfigureAwait(false);
+                var body = _mailMessageProvider.GetTemplateBasedMailBody("ConfirmationMailTemplate.html", message.DataFolder,"*.*");
+                var httpStatusCode = _mailSender.SendMailAsync(
+                        message.Email,
+                        _appSettings.CcAddress,
+                        _appSettings.SenderAddress,
+                       _appSettings.SubjectConfirmation + " " + message.Id,
+                        body,
+                        new string[]{})
+                    .Result;
 
                 await _bus.PublishAsync(Mapper.Map<FileReadyForProcessingEvent>(message))
                     .ConfigureAwait(false);
@@ -200,7 +221,6 @@ namespace HansJuergenWeb.MessageHandlers
                 throw;
             }
         }
-
 
         private async Task ProcessUploadedFileThroughR(FileReadyForProcessingEvent message)
         {

@@ -108,7 +108,9 @@
   <ItemGroup>
     <Compile Include="FolderBasedMailSender.cs" />
     <Compile Include="IFolderBasedMailSender.cs" />
+    <Compile Include="IMailMessageProvider.cs" />
     <Compile Include="ISubscriptionManager.cs" />
+    <Compile Include="MailMessageProvider.cs" />
     <Compile Include="Repository.cs" />
     <Compile Include="IRadapter.cs" />
     <Compile Include="IRepository.cs" />
