@@ -29,12 +29,6 @@ namespace HansJuergenWeb.MessageHandlers
                 });
 
                 var appSettings = new AppSettings();
-                var repository = new Repository(appSettings);
-                var subscriptionService = new SubscriptionService(repository);
-                var mailSender = new MailSender();
-                var radapter = new Radapter(appSettings);
-                var bus = RabbitHutch.CreateBus(appSettings.EasyNetQConfig);
-                var mailMessageService = new MailMessageService(appSettings,subscriptionService);
 
                 HostFactory.Run(x => //1
                 {
@@ -42,6 +36,13 @@ namespace HansJuergenWeb.MessageHandlers
                     {
                         try
                         {
+                            var repository = new Repository(appSettings);
+                            var subscriptionService = new SubscriptionService(repository);
+                            var mailSender = new MailSender();
+                            var radapter = new Radapter(appSettings);
+                            var bus = RabbitHutch.CreateBus(appSettings.EasyNetQConfig);
+                            var mailMessageService = new MailMessageService(appSettings, subscriptionService);
+
                             s.ConstructUsing(name => new Worker(bus,appSettings, 
                                 new HandleSendEmailConfirmingUpload(bus,mailMessageService,mailSender,appSettings),
                                 new HandleProcessUploadedFileThroughR(bus,appSettings,radapter),
