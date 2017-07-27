@@ -1,7 +1,7 @@
 ﻿using System.Configuration;
 using Ajf.Nuget.Logging;
 
-namespace HansJuergenWeb.MessageHandlers
+namespace HansJuergenWeb.MessageHandlers.Settings
 {
     public class AppSettings : ServiceSettingsFromConfigFile, IAppSettings
     {

@@ -2,6 +2,10 @@
 using Ajf.Nuget.Logging;
 using AutoMapper;
 using HansJuergenWeb.Contracts;
+using HansJuergenWeb.MessageHandlers.Adapters;
+using HansJuergenWeb.MessageHandlers.Repositories;
+using HansJuergenWeb.MessageHandlers.Services;
+using HansJuergenWeb.MessageHandlers.Settings;
 using Serilog;
 using Topshelf;
 
@@ -24,7 +28,7 @@ namespace HansJuergenWeb.MessageHandlers
 
                 var appSettings = new AppSettings();
                 var repository = new Repository(appSettings);
-                var subscriptionManager = new SubscriptionManager(repository);
+                var subscriptionManager = new SubscriptionService(repository);
                 var mailSender = new MailSender();
                 var radapter = new Radapter(appSettings);
 
@@ -36,7 +40,7 @@ namespace HansJuergenWeb.MessageHandlers
                         {
                             s.ConstructUsing(name =>
                             {
-                                return new Worker(appSettings, subscriptionManager, radapter, new MailMessageProvider(appSettings),mailSender );
+                                return new Worker(appSettings, subscriptionManager, radapter, new MailMessageService(appSettings),mailSender );
                             }); //3
                             s.WhenStarted(tc =>
                             {

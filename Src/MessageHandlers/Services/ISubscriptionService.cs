@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
 
-namespace HansJuergenWeb.MessageHandlers
+namespace HansJuergenWeb.MessageHandlers.Services
 {
-    public interface ISubscriptionManager
+    public interface ISubscriptionService
     {
         Task AddUploaderToAllergeneSubscriptionAsync(string email, string allergene);
     }

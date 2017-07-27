@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using HansJuergenWeb.MessageHandlers.Settings;
 
-namespace HansJuergenWeb.MessageHandlers
+namespace HansJuergenWeb.MessageHandlers.Repositories
 {
     public class Repository : IRepository
     {

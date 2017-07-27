@@ -1,14 +1,15 @@
 using System.Linq;
 using System.Threading.Tasks;
+using HansJuergenWeb.MessageHandlers.Repositories;
 using Serilog;
 
-namespace HansJuergenWeb.MessageHandlers
+namespace HansJuergenWeb.MessageHandlers.Services
 {
-    public class SubscriptionManager : ISubscriptionManager
+    public class SubscriptionService : ISubscriptionService
     {
         private readonly IRepository _repository;
 
-        public SubscriptionManager(IRepository repository)
+        public SubscriptionService(IRepository repository)
         {
             _repository = repository;
         }

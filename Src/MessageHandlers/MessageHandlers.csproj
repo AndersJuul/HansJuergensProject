@@ -124,18 +124,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IMailMessageProvider.cs" />
-    <Compile Include="ISubscriptionManager.cs" />
-    <Compile Include="MailMessageProvider.cs" />
-    <Compile Include="Repository.cs" />
-    <Compile Include="IRadapter.cs" />
-    <Compile Include="IRepository.cs" />
-    <Compile Include="Radapter.cs" />
-    <Compile Include="StructureMapContainerWrapper.cs" />
-    <Compile Include="SubscriptionManager.cs" />
+    <Compile Include="Services\IMailMessageService.cs" />
+    <Compile Include="Services\ISubscriptionService.cs" />
+    <Compile Include="Services\MailMessageService.cs" />
+    <Compile Include="Repositories\Repository.cs" />
+    <Compile Include="Adapters\IRadapter.cs" />
+    <Compile Include="Repositories\IRepository.cs" />
+    <Compile Include="Adapters\Radapter.cs" />
+    <Compile Include="Services\SubscriptionService.cs" />
     <Compile Include="Worker.cs" />
-    <Compile Include="AppSettings.cs" />
-    <Compile Include="IAppSettings.cs" />
+    <Compile Include="Settings\AppSettings.cs" />
+    <Compile Include="Settings\IAppSettings.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -160,6 +159,7 @@
       <Name>Contracts</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\OctoPack.3.6.1\build\OctoPack.targets" Condition="Exists('..\packages\OctoPack.3.6.1\build\OctoPack.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

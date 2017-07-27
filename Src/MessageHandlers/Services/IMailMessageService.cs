@@ -1,6 +1,6 @@
-﻿namespace HansJuergenWeb.MessageHandlers
+﻿namespace HansJuergenWeb.MessageHandlers.Services
 {
-    public interface IMailMessageProvider
+    public interface IMailMessageService
     {
         string GetTemplateBasedMailBody(string templatePath, string messageDataFolder, string searchPattern);
     }

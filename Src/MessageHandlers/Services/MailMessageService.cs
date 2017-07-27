@@ -2,18 +2,20 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using HansJuergenWeb.MessageHandlers.Settings;
 using Serilog;
 
-namespace HansJuergenWeb.MessageHandlers
+namespace HansJuergenWeb.MessageHandlers.Services
 {
-    public class MailMessageProvider : IMailMessageProvider
+    public class MailMessageService : IMailMessageService
     {
         const string FolderContents = "$$folder-contents$$";
         const string MailSender = "$$mail-sender$$";
+        private const string AllergeneSubscriptions = "$$allergene-subscriptions$$";
 
         private readonly IAppSettings _appSettings;
 
-        public MailMessageProvider(IAppSettings appSettings)
+        public MailMessageService(IAppSettings appSettings)
         {
             _appSettings = appSettings;
         }

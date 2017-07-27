@@ -9,6 +9,9 @@ using Ajf.Nuget.Logging;
 using AutoMapper;
 using EasyNetQ;
 using HansJuergenWeb.Contracts;
+using HansJuergenWeb.MessageHandlers.Adapters;
+using HansJuergenWeb.MessageHandlers.Services;
+using HansJuergenWeb.MessageHandlers.Settings;
 using Serilog;
 
 namespace HansJuergenWeb.MessageHandlers
@@ -16,20 +19,20 @@ namespace HansJuergenWeb.MessageHandlers
     public class Worker
     {
         private readonly IAppSettings _appSettings;
-        private readonly IMailMessageProvider _mailMessageProvider;
+        private readonly IMailMessageService _mailMessageService;
         private readonly IMailSender _mailSender;
         private readonly IRadapter _radapter;
-        private readonly ISubscriptionManager _subscriptionManager;
+        private readonly ISubscriptionService _subscriptionService;
         private BackgroundWorker _backgroundWorkerCleaning;
         private IBus _bus;
 
-        public Worker(IAppSettings appSettings, ISubscriptionManager subscriptionManager, IRadapter radapter,
-            IMailMessageProvider mailMessageProvider, IMailSender mailSender)
+        public Worker(IAppSettings appSettings, ISubscriptionService subscriptionService, IRadapter radapter,
+            IMailMessageService mailMessageService, IMailSender mailSender)
         {
             _appSettings = appSettings;
-            _subscriptionManager = subscriptionManager;
+            _subscriptionService = subscriptionService;
             _radapter = radapter;
-            _mailMessageProvider = mailMessageProvider;
+            _mailMessageService = mailMessageService;
             _mailSender = mailSender;
         }
 
@@ -104,8 +107,7 @@ namespace HansJuergenWeb.MessageHandlers
         private void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             _bus.SubscribeAsync<FileUploadedEvent>("SendEmailConfirmingUpload", SendEmailConfirmingUpload);
-            _bus.SubscribeAsync<FileReadyForProcessingEvent>("ProcessUploadedFileThroughR",
-                ProcessUploadedFileThroughR);
+            _bus.SubscribeAsync<FileReadyForProcessingEvent>("ProcessUploadedFileThroughR",ProcessUploadedFileThroughR);
             _bus.SubscribeAsync<FileProcessedEvent>("SendEmailWithResults", SendEmailWithResults);
             _bus.SubscribeAsync<FileProcessedEvent>("UpdateSubscriptionDatabase", UpdateSubscriptionDatabase);
             _bus.SubscribeAsync<FileProcessedEvent>("RemoveOldDataFolders", RemoveOldDataFolders);
@@ -142,9 +144,9 @@ namespace HansJuergenWeb.MessageHandlers
                     return;
                 }
 
-                lock (_subscriptionManager)
+                lock (_subscriptionService)
                 {
-                    _subscriptionManager
+                    _subscriptionService
                         .AddUploaderToAllergeneSubscriptionAsync(message.Email, message.Allergene)
                         .Wait();
                 }
@@ -164,7 +166,7 @@ namespace HansJuergenWeb.MessageHandlers
 
                 while (!SubscriptionDone) ;
 
-                var body = _mailMessageProvider.GetTemplateBasedMailBody("ResultsMailTemplate.html", message.DataFolder,
+                var body = _mailMessageService.GetTemplateBasedMailBody("ResultsMailTemplate.html", message.DataFolder,
                     "*.*");
                 var attachmentPaths = Directory.GetFiles(message.DataFolder, "*.Rout");
                 var httpStatusCode = _mailSender.SendMailAsync(
@@ -194,7 +196,7 @@ namespace HansJuergenWeb.MessageHandlers
 
                 while (!SubscriptionDone) ;
 
-                var body = _mailMessageProvider.GetTemplateBasedMailBody("ConfirmationMailTemplate.html",
+                var body = _mailMessageService.GetTemplateBasedMailBody("ConfirmationMailTemplate.html",
                     message.DataFolder, "*.*");
                 var httpStatusCode = _mailSender.SendMailAsync(
                         message.Email,

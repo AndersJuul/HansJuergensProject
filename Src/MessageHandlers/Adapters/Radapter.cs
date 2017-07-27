@@ -1,10 +1,11 @@
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using HansJuergenWeb.MessageHandlers.Settings;
+using Serilog;
 
-namespace HansJuergenWeb.MessageHandlers
+namespace HansJuergenWeb.MessageHandlers.Adapters
 {
     public class Radapter : IRadapter
     {

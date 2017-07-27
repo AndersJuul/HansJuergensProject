@@ -1,4 +1,4 @@
-﻿namespace HansJuergenWeb.MessageHandlers
+﻿namespace HansJuergenWeb.MessageHandlers.Settings
 {
     public interface IAppSettings
     {

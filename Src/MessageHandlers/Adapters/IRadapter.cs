@@ -1,6 +1,6 @@
 using System;
 
-namespace HansJuergenWeb.MessageHandlers
+namespace HansJuergenWeb.MessageHandlers.Adapters
 {
     public interface IRadapter
     {
