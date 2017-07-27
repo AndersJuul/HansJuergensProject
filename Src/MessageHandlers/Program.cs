@@ -25,6 +25,9 @@ namespace HansJuergenWeb.MessageHandlers
                 var appSettings = new AppSettings();
                 var repository = new Repository(appSettings);
                 var subscriptionManager = new SubscriptionManager(repository);
+                var mailSender = new MailSender();
+                var folderBasedMailSender = new FolderBasedMailSender(appSettings, mailSender);
+                var radapter = new Radapter(appSettings);
 
                 HostFactory.Run(x => //1
                 {
@@ -34,7 +37,7 @@ namespace HansJuergenWeb.MessageHandlers
                         {
                             s.ConstructUsing(name =>
                             {
-                                return new Worker(appSettings, subscriptionManager);
+                                return new Worker(appSettings, subscriptionManager, folderBasedMailSender, radapter);
                             }); //3
                             s.WhenStarted(tc =>
                             {

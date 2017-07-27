@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Ajf.Nuget.Logging;
@@ -12,7 +10,6 @@ using AutoMapper;
 using EasyNetQ;
 using HansJuergenWeb.Contracts;
 using Serilog;
-using Serilog.Context;
 
 namespace HansJuergenWeb.MessageHandlers
 {
@@ -20,14 +17,17 @@ namespace HansJuergenWeb.MessageHandlers
     {
         private readonly IAppSettings _appSettings;
         private IBus _bus;
-        private IMailSender _mailSender;
-        private IRadapter _radapter;
+        private readonly IRadapter _radapter;
         private readonly ISubscriptionManager _subscriptionManager;
+        private readonly IFolderBasedMailSender _folderBasedMailSender;
+        private BackgroundWorker _backgroundWorkerCleaning;
 
-        public Worker(IAppSettings appSettings, ISubscriptionManager subscriptionManager)
+        public Worker(IAppSettings appSettings, ISubscriptionManager subscriptionManager, IFolderBasedMailSender folderBasedMailSender, IRadapter radapter)
         {
             _appSettings = appSettings;
             _subscriptionManager = subscriptionManager;
+            _folderBasedMailSender = folderBasedMailSender;
+            _radapter = radapter;
         }
 
         public bool WorkDone { get; set; }
@@ -37,20 +37,66 @@ namespace HansJuergenWeb.MessageHandlers
             try
             {
                 _bus = RabbitHutch.CreateBus(_appSettings.EasyNetQConfig);
-                _radapter = new Radapter(_appSettings);
-                _mailSender = new MailSender();
 
                 SubscriptionDone = false;
 
-                var backgroundWorker = new BackgroundWorker();
-                backgroundWorker.DoWork += BackgroundWorker_DoWork;
-                backgroundWorker.RunWorkerAsync();
+                var backgroundWorkerSetup = new BackgroundWorker();
+                backgroundWorkerSetup.DoWork += BackgroundWorker_DoWork;
+                backgroundWorkerSetup.RunWorkerAsync();
+
+                _backgroundWorkerCleaning = new BackgroundWorker
+                {
+                    WorkerSupportsCancellation = true
+                };
+                _backgroundWorkerCleaning.DoWork += BackgroundWorkerCleaning_DoWork;
+                _backgroundWorkerCleaning.RunWorkerAsync();
+
 
             }
             catch (Exception ex)
             {
                 Log.Error(ex, "During Start", new object[0]);
                 throw;
+            }
+        }
+
+        private void BackgroundWorkerCleaning_DoWork(object sender, DoWorkEventArgs e)
+        {
+            var backgroundWorker = (sender as BackgroundWorker);
+            if (backgroundWorker == null) return;
+
+            DateTime lastClean = DateTime.MinValue;
+
+            while (!backgroundWorker.CancellationPending)
+            {
+                Thread.Sleep(100);
+                if (!backgroundWorker.CancellationPending)
+                {
+                    if (DateTime.Now.Subtract(lastClean) > TimeSpan.FromMinutes(1))
+                    {
+                        var currentTime = DateTime.Now;
+                        var daysToKeepDataFiles = double.Parse(ConfigurationManager.AppSettings["DaysToKeepDataFiles"],
+                            CultureInfo.InvariantCulture);
+                        var earliestToKeep = currentTime.Subtract(TimeSpan.FromDays(daysToKeepDataFiles));
+
+                        var directories = Directory.GetDirectories(_appSettings.UploadDir);
+                        foreach (var directory in directories)
+                        {
+                            var creationTime = Directory.GetCreationTime(directory);
+                            
+                            if (earliestToKeep>creationTime)
+                            {
+                                Log.Logger.Information($"Time to remove old folder: {directory} from {creationTime}");
+
+                                var files = Directory.GetFiles(directory);
+                                foreach (var file in files)
+                                    File.Delete(file);
+                                Directory.Delete(directory);
+                                break;
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -74,23 +120,6 @@ namespace HansJuergenWeb.MessageHandlers
 
             while (!SubscriptionDone) ;
 
-            var directories = Directory.GetDirectories(_appSettings.UploadDir);
-            foreach (var directory in directories)
-            {
-                var creationTime = Directory.GetCreationTime(directory);
-                var timeSpan = DateTime.Now.Subtract(creationTime);
-                var daysToKeepDataFiles = double.Parse(ConfigurationManager.AppSettings["DaysToKeepDataFiles"],
-                    CultureInfo.InvariantCulture);
-                if (timeSpan > TimeSpan.FromDays(daysToKeepDataFiles))
-                {
-                    Log.Logger.Information($"Time to remove old folder: {directory} from {creationTime}");
-
-                    var files = Directory.GetFiles(directory);
-                    foreach (var file in files)
-                        File.Delete(file);
-                    Directory.Delete(directory);
-                }
-            }
 
             await Task.FromResult(0);
         }
@@ -136,7 +165,7 @@ namespace HansJuergenWeb.MessageHandlers
 
                 while (!SubscriptionDone) ;
 
-                await DoMailSending("ResultsMailTemplate.html", message.Email, message.DataFolder,
+                await _folderBasedMailSender.DoMailSending("ResultsMailTemplate.html", message.Email, message.DataFolder,
                         _appSettings.SubjectResults + " " + message.Id)
                     .ConfigureAwait(false);
 
@@ -158,7 +187,7 @@ namespace HansJuergenWeb.MessageHandlers
 
                 while (!SubscriptionDone) ;
 
-                await DoMailSending("ConfirmationMailTemplate.html", message.Email, message.DataFolder,
+                await _folderBasedMailSender.DoMailSending("ConfirmationMailTemplate.html", message.Email, message.DataFolder,
                         _appSettings.SubjectConfirmation + " " + message.Id)
                     .ConfigureAwait(false);
 
@@ -172,51 +201,6 @@ namespace HansJuergenWeb.MessageHandlers
             }
         }
 
-        private async Task DoMailSending(string templateName, string messageEmail, string messageDataFolder,
-            string subject)
-        {
-            try
-            {
-                var template = File.ReadAllLines(templateName);
-
-                var attachments = GetFolderContents(messageDataFolder).Where(x => x.ToLower().Contains("out"));
-                var folderContentsOverview = GetFolderContentsOverview(messageDataFolder)
-                    .Select(current => "<li>" + current + "</li>")
-                    .Aggregate((current, next) => current + next);
-
-                var folderContents = "$$folder-contents$$";
-                var body = template.Select(x => x.Replace(folderContents, folderContentsOverview))
-                    .Aggregate((current, next) => current + next);
-
-                var httpStatusCode = _mailSender.SendMailAsync(
-                        messageEmail,
-                        _appSettings.CcAddress,
-                        _appSettings.SenderAddress,
-                        subject,
-                        body,
-                        attachments)
-                    .Result;
-
-                Log.Logger.Information($"Result of sending mail: {httpStatusCode}");
-            }
-            catch (Exception e)
-            {
-                Log.Logger.Error(e, "Error sending email.");
-                throw;
-            }
-        }
-
-        private IEnumerable<string> GetFolderContentsOverview(string messageDataFolder)
-        {
-            var folderContents = GetFolderContents(messageDataFolder)
-                .Select(x => x.Substring(messageDataFolder.Length));
-            return folderContents;
-        }
-
-        private IEnumerable<string> GetFolderContents(string messageDataFolder)
-        {
-            return Directory.GetFiles(messageDataFolder);
-        }
 
         private async Task ProcessUploadedFileThroughR(FileReadyForProcessingEvent message)
         {
@@ -232,6 +216,7 @@ namespace HansJuergenWeb.MessageHandlers
 
         public void Stop()
         {
+            _backgroundWorkerCleaning?.CancelAsync();
         }
     }
 }
