@@ -16,25 +16,26 @@ namespace HansJuergenWeb.MessageHandlers
     public class Worker
     {
         private readonly IAppSettings _appSettings;
-        private IBus _bus;
-        private readonly IRadapter _radapter;
-        private readonly ISubscriptionManager _subscriptionManager;
-        private readonly IFolderBasedMailSender _folderBasedMailSender;
-        private BackgroundWorker _backgroundWorkerCleaning;
         private readonly IMailMessageProvider _mailMessageProvider;
         private readonly IMailSender _mailSender;
+        private readonly IRadapter _radapter;
+        private readonly ISubscriptionManager _subscriptionManager;
+        private BackgroundWorker _backgroundWorkerCleaning;
+        private IBus _bus;
 
-        public Worker(IAppSettings appSettings, ISubscriptionManager subscriptionManager, IFolderBasedMailSender folderBasedMailSender, IRadapter radapter, IMailMessageProvider mailMessageProvider, IMailSender mailSender)
+        public Worker(IAppSettings appSettings, ISubscriptionManager subscriptionManager, IRadapter radapter,
+            IMailMessageProvider mailMessageProvider, IMailSender mailSender)
         {
             _appSettings = appSettings;
             _subscriptionManager = subscriptionManager;
-            _folderBasedMailSender = folderBasedMailSender;
             _radapter = radapter;
             _mailMessageProvider = mailMessageProvider;
             _mailSender = mailSender;
         }
 
         public bool WorkDone { get; set; }
+
+        public bool SubscriptionDone { get; set; }
 
         public void Start()
         {
@@ -54,8 +55,6 @@ namespace HansJuergenWeb.MessageHandlers
                 };
                 _backgroundWorkerCleaning.DoWork += BackgroundWorkerCleaning_DoWork;
                 _backgroundWorkerCleaning.RunWorkerAsync();
-
-
             }
             catch (Exception ex)
             {
@@ -66,16 +65,15 @@ namespace HansJuergenWeb.MessageHandlers
 
         private void BackgroundWorkerCleaning_DoWork(object sender, DoWorkEventArgs e)
         {
-            var backgroundWorker = (sender as BackgroundWorker);
+            var backgroundWorker = sender as BackgroundWorker;
             if (backgroundWorker == null) return;
 
-            DateTime lastClean = DateTime.MinValue;
+            var lastClean = DateTime.MinValue;
 
             while (!backgroundWorker.CancellationPending)
             {
                 Thread.Sleep(100);
                 if (!backgroundWorker.CancellationPending)
-                {
                     if (DateTime.Now.Subtract(lastClean) > TimeSpan.FromMinutes(1))
                     {
                         var currentTime = DateTime.Now;
@@ -87,8 +85,8 @@ namespace HansJuergenWeb.MessageHandlers
                         foreach (var directory in directories)
                         {
                             var creationTime = Directory.GetCreationTime(directory);
-                            
-                            if (earliestToKeep>creationTime)
+
+                            if (earliestToKeep > creationTime)
                             {
                                 Log.Logger.Information($"Time to remove old folder: {directory} from {creationTime}");
 
@@ -100,11 +98,8 @@ namespace HansJuergenWeb.MessageHandlers
                             }
                         }
                     }
-                }
             }
         }
-
-        public bool SubscriptionDone { get; set; }
 
         private void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
@@ -169,7 +164,8 @@ namespace HansJuergenWeb.MessageHandlers
 
                 while (!SubscriptionDone) ;
 
-                var body = _mailMessageProvider.GetTemplateBasedMailBody("ResultsMailTemplate.html", message.DataFolder, "*.*");
+                var body = _mailMessageProvider.GetTemplateBasedMailBody("ResultsMailTemplate.html", message.DataFolder,
+                    "*.*");
                 var attachmentPaths = Directory.GetFiles(message.DataFolder, "*.Rout");
                 var httpStatusCode = _mailSender.SendMailAsync(
                         message.Email,
@@ -179,10 +175,6 @@ namespace HansJuergenWeb.MessageHandlers
                         body,
                         attachmentPaths)
                     .Result;
-
-                //await _folderBasedMailSender.DoMailSending("ResultsMailTemplate.html", message.Email, message.DataFolder,
-                //        _appSettings.SubjectResults + " " + message.Id)
-                //    .ConfigureAwait(false);
 
                 await _bus.PublishAsync(Mapper.Map<FileReadyForCleanupEvent>(message))
                     .ConfigureAwait(false);
@@ -202,14 +194,15 @@ namespace HansJuergenWeb.MessageHandlers
 
                 while (!SubscriptionDone) ;
 
-                var body = _mailMessageProvider.GetTemplateBasedMailBody("ConfirmationMailTemplate.html", message.DataFolder,"*.*");
+                var body = _mailMessageProvider.GetTemplateBasedMailBody("ConfirmationMailTemplate.html",
+                    message.DataFolder, "*.*");
                 var httpStatusCode = _mailSender.SendMailAsync(
                         message.Email,
                         _appSettings.CcAddress,
                         _appSettings.SenderAddress,
-                       _appSettings.SubjectConfirmation + " " + message.Id,
+                        _appSettings.SubjectConfirmation + " " + message.Id,
                         body,
-                        new string[]{})
+                        new string[] { })
                     .Result;
 
                 await _bus.PublishAsync(Mapper.Map<FileReadyForProcessingEvent>(message))
