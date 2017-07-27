@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using HansJuergenWeb.MessageHandlers.Models;
 
 namespace HansJuergenWeb.MessageHandlers.Repositories
 {
@@ -10,5 +11,6 @@ namespace HansJuergenWeb.MessageHandlers.Repositories
         Task<int> CreateUploaderAsync(string email);
         Task<IEnumerable<int>> GetAllergeneSubscriptionIdsAsync(int allergeneId, int uploaderId);
         Task<int> CreateAllergeneSubscriptionAsync(int allergeneId, int uploaderId);
+        IEnumerable<Subscription> GetAllergeneSubscriptions(string messageEmail);
     }
 }

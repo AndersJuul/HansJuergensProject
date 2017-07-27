@@ -2,6 +2,6 @@
 {
     public interface IMailMessageService
     {
-        string GetTemplateBasedMailBody(string templatePath, string messageDataFolder, string searchPattern);
+        string GetTemplateBasedMailBody(string templatePath, string messageDataFolder, string searchPattern, string messageEmail);
     }
 }

@@ -1,8 +1,10 @@
 ﻿using System;
 using Ajf.Nuget.Logging;
 using AutoMapper;
+using EasyNetQ;
 using HansJuergenWeb.Contracts;
 using HansJuergenWeb.MessageHandlers.Adapters;
+using HansJuergenWeb.MessageHandlers.MessageHandlers;
 using HansJuergenWeb.MessageHandlers.Repositories;
 using HansJuergenWeb.MessageHandlers.Services;
 using HansJuergenWeb.MessageHandlers.Settings;
@@ -28,9 +30,11 @@ namespace HansJuergenWeb.MessageHandlers
 
                 var appSettings = new AppSettings();
                 var repository = new Repository(appSettings);
-                var subscriptionManager = new SubscriptionService(repository);
+                var subscriptionService = new SubscriptionService(repository);
                 var mailSender = new MailSender();
                 var radapter = new Radapter(appSettings);
+                var bus = RabbitHutch.CreateBus(appSettings.EasyNetQConfig);
+                var mailMessageService = new MailMessageService(appSettings,subscriptionService);
 
                 HostFactory.Run(x => //1
                 {
@@ -38,10 +42,11 @@ namespace HansJuergenWeb.MessageHandlers
                     {
                         try
                         {
-                            s.ConstructUsing(name =>
-                            {
-                                return new Worker(appSettings, subscriptionManager, radapter, new MailMessageService(appSettings),mailSender );
-                            }); //3
+                            s.ConstructUsing(name => new Worker(bus,appSettings, 
+                                new HandleSendEmailConfirmingUpload(bus,mailMessageService,mailSender,appSettings),
+                                new HandleProcessUploadedFileThroughR(bus,appSettings,radapter),
+                                new HandleSendEmailWithResults(bus,mailMessageService,mailSender,appSettings),
+                                new HandleUpdateSubscriptionDatabase(subscriptionService))); //3
                             s.WhenStarted(tc =>
                             {
                                 Log.Logger.Information("Starting service");

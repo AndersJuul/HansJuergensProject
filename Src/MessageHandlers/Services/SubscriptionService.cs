@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HansJuergenWeb.MessageHandlers.Models;
 using HansJuergenWeb.MessageHandlers.Repositories;
 using Serilog;
 
@@ -56,6 +58,11 @@ namespace HansJuergenWeb.MessageHandlers.Services
                 .CreateAllergeneSubscriptionAsync(allergeneId, uploaderId)
                 .ConfigureAwait(false);
             Log.Logger.Information($"Subscription created for email={email}, allergene={allergene}: {subscriptionId}");
+        }
+
+        public IEnumerable<Subscription> GetSubscriptions(string messageEmail)
+        {
+            return _repository.GetAllergeneSubscriptions(messageEmail);
         }
     }
 }

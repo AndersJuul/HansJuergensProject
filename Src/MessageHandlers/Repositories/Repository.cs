@@ -3,6 +3,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using HansJuergenWeb.MessageHandlers.Models;
 using HansJuergenWeb.MessageHandlers.Settings;
 
 namespace HansJuergenWeb.MessageHandlers.Repositories
@@ -60,6 +61,12 @@ namespace HansJuergenWeb.MessageHandlers.Repositories
                 .ConfigureAwait(false);
 
             return allergeneSubscriptionIds.Single();
+        }
+
+        public IEnumerable<Subscription> GetAllergeneSubscriptions(string messageEmail)
+        {
+            return _sqlConnection
+                .Query<Subscription>("SELECT alsu.[Id] as Id,alsu.[Allergene_Id] as AllergeneId, alsu.[Uploader_Id] as UploaderId, up.Email, al.Name FROM [AllergeneSubscriptions] alsu inner join [Uploaders] up on alsu.Uploader_Id = up.Id inner join[Allergenes] al on alsu.Allergene_Id = al.Id ");
         }
     }
 }

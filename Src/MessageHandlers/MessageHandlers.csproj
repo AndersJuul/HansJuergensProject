@@ -124,6 +124,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MessageHandlers\HandleProcessUploadedFileThroughR.cs" />
+    <Compile Include="MessageHandlers\HandleSendEmailConfirmingUpload.cs" />
+    <Compile Include="MessageHandlers\HandleSendEmailWithResults.cs" />
+    <Compile Include="MessageHandlers\HandleUpdateSubscriptionDatabase.cs" />
+    <Compile Include="MessageHandlers\IHandleProcessUploadedFileThroughR.cs" />
+    <Compile Include="MessageHandlers\IHandleSendEmailConfirmingUpload.cs" />
+    <Compile Include="MessageHandlers\IHandleSendEmailWithResults.cs" />
+    <Compile Include="MessageHandlers\IHandleUpdateSubscriptionDatabase.cs" />
+    <Compile Include="Models\Subscription.cs" />
     <Compile Include="Services\IMailMessageService.cs" />
     <Compile Include="Services\ISubscriptionService.cs" />
     <Compile Include="Services\MailMessageService.cs" />

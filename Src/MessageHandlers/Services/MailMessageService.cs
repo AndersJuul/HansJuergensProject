@@ -9,18 +9,20 @@ namespace HansJuergenWeb.MessageHandlers.Services
 {
     public class MailMessageService : IMailMessageService
     {
-        const string FolderContents = "$$folder-contents$$";
-        const string MailSender = "$$mail-sender$$";
+        private const string FolderContents = "$$folder-contents$$";
+        private const string MailSender = "$$mail-sender$$";
         private const string AllergeneSubscriptions = "$$allergene-subscriptions$$";
 
         private readonly IAppSettings _appSettings;
+        private readonly ISubscriptionService _subscriptionService;
 
-        public MailMessageService(IAppSettings appSettings)
+        public MailMessageService(IAppSettings appSettings, ISubscriptionService subscriptionService)
         {
             _appSettings = appSettings;
+            _subscriptionService = subscriptionService;
         }
 
-        public string GetTemplateBasedMailBody(string templatePath, string messageDataFolder, string searchPattern)
+        public string GetTemplateBasedMailBody(string templatePath, string messageDataFolder, string searchPattern, string messageEmail)
         {
             try
             {
@@ -34,6 +36,21 @@ namespace HansJuergenWeb.MessageHandlers.Services
                 dict.Add(FolderContents, folderContentsOverview);
 
                 dict.Add(MailSender, _appSettings.SenderAddress);
+
+                var subscriptions = _subscriptionService.GetSubscriptions(messageEmail);
+
+                var empty = "";
+                foreach (var subscription in subscriptions)
+                {
+                    empty += $"<li>{subscription.Name} </li>";
+                }
+                if (!string.IsNullOrEmpty(empty))
+                {
+                    empty = $"<p>Subscriptions:<p/><ul>" + empty;
+                    empty += "<ul>";
+                    dict.Add(AllergeneSubscriptions, empty);
+
+                }
 
                 var body = template.ToList();
                 foreach (var dictKey in dict.Keys)
