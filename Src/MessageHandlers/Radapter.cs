@@ -8,14 +8,20 @@ namespace HansJuergenWeb.MessageHandlers
 {
     public class Radapter : IRadapter
     {
+        private readonly IAppSettings _appSettings;
+
+        public Radapter(IAppSettings appSettings)
+        {
+            _appSettings = appSettings;
+        }
         public void BatchProcess(string pathToScript, Guid messageId, string uploadDir)
         {
             Log.Logger.Information("Starting R processing...");
 
             var pathToData = Path.Combine(uploadDir, messageId.ToString());
 
-            var pathToR = @"C:\Program Files\R\R-3.4.1\bin\R.exe";
-            var fileName = $"\"{pathToR}\"";
+            //var pathToR = @"C:\Program Files\R\R-3.4.1\bin\R.exe";
+            var fileName = $"\"{_appSettings.PathToR}\"";
             var arguments = $"CMD BATCH --vanilla --slave \"{pathToScript}\"";
 
             var stringBuilder = new List<string>();

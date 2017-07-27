@@ -13,11 +13,14 @@ namespace HansJuergenWeb.MessageHandlers
             SubjectResults = ConfigurationManager.AppSettings["SubjectResults"];
             UploadDir = ConfigurationManager.AppSettings["UploadDir"];
             FlowCytoConnection = ConfigurationManager.AppSettings["FlowCytoConnection"];
+            PathToR = ConfigurationManager.AppSettings["PathToR"];
         }
 
         public string UploadDir { get; set; }
 
         public string FlowCytoConnection { get; set; }
+
+        public string PathToR { get; set; }
 
         public string SubjectResults { get; set; }
 

@@ -37,7 +37,7 @@ namespace HansJuergenWeb.MessageHandlers
             try
             {
                 _bus = RabbitHutch.CreateBus(_appSettings.EasyNetQConfig);
-                _radapter = new Radapter();
+                _radapter = new Radapter(_appSettings);
                 _mailSender = new MailSender();
 
                 SubscriptionDone = false;
