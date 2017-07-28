@@ -42,12 +42,9 @@ namespace HansJuergenWeb.MessageHandlers
         {
             try
             {
-                Log.Logger.Information("A");
-
                 var backgroundWorkerSetup = new BackgroundWorker();
                 backgroundWorkerSetup.DoWork += BackgroundWorker_DoWork;
                 backgroundWorkerSetup.RunWorkerAsync();
-                Log.Logger.Information("B");
 
                 _backgroundWorkerCleaning = new BackgroundWorker
                 {
@@ -55,7 +52,6 @@ namespace HansJuergenWeb.MessageHandlers
                 };
                 _backgroundWorkerCleaning.DoWork += BackgroundWorkerCleaning_DoWork;
                 _backgroundWorkerCleaning.RunWorkerAsync();
-                Log.Logger.Information("C");
             }
             catch (Exception ex)
             {
@@ -104,18 +100,15 @@ namespace HansJuergenWeb.MessageHandlers
 
         private void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            Log.Logger.Information("D");
             _bus.Bus.SubscribeAsync<FileUploadedEvent>("SendEmailConfirmingUpload",
                 _handleSendEmailConfirmingUpload.Handle);
-            Log.Logger.Information("E");
             _bus.Bus.SubscribeAsync<FileReadyForProcessingEvent>("ProcessUploadedFileThroughR",
                 _handleProcessUploadedFileThroughR.Handle);
-            Log.Logger.Information("F");
             _bus.Bus.SubscribeAsync<FileProcessedEvent>("SendEmailWithResults", _handleSendEmailWithResults.Handle);
-            Log.Logger.Information("G");
             _bus.Bus.SubscribeAsync<FileProcessedEvent>("UpdateSubscriptionDatabase",
                 _handleUpdateSubscriptionDatabase.Handle);
-            Log.Logger.Information("H");
+
+            Log.Logger.Information("Done starting consumers");
         }
 
         public void Stop()
