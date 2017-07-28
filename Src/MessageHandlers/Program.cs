@@ -45,7 +45,7 @@ namespace HansJuergenWeb.MessageHandlers
                             Log.Logger.Information("4");
                             var radapter = new Radapter(appSettings);
                             Log.Logger.Information("5");
-                            var bus = RabbitHutch.CreateBus(appSettings.EasyNetQConfig);
+                            IBus bus = null;// RabbitHutch.CreateBus(appSettings.EasyNetQConfig);
                             Log.Logger.Information("6");
                             var mailMessageService = new MailMessageService(appSettings, subscriptionService);
                             Log.Logger.Information("7");
