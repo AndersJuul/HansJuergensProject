@@ -38,8 +38,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Ajf.Nuget.Logging, Version=1.0.0.53, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Ajf.Nuget.Logging.1.0.0.53\lib\net47\Ajf.Nuget.Logging.dll</HintPath>
+    <Reference Include="Ajf.Nuget.Logging, Version=1.0.0.54, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ajf.Nuget.Logging.1.0.0.54\lib\net47\Ajf.Nuget.Logging.dll</HintPath>
     </Reference>
     <Reference Include="AutoMapper, Version=6.1.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoMapper.6.1.1\lib\net45\AutoMapper.dll</HintPath>
@@ -143,6 +143,7 @@
     <Compile Include="Repositories\IRepository.cs" />
     <Compile Include="Adapters\Radapter.cs" />
     <Compile Include="Services\SubscriptionService.cs" />
+    <Compile Include="temp\TopshelfWrapper.cs" />
     <Compile Include="Worker.cs" />
     <Compile Include="Settings\AppSettings.cs" />
     <Compile Include="Settings\IAppSettings.cs" />

@@ -43,6 +43,8 @@ namespace HansJuergenWeb.MessageHandlers.MessageHandlers
                         new string[] { })
                     .Result;
 
+                Log.Logger.Information($"Result of mail sending: {httpStatusCode}");
+
                 await _bus.Bus.PublishAsync(Mapper.Map<FileReadyForProcessingEvent>(message))
                     .ConfigureAwait(false);
             }

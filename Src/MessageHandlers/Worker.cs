@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Globalization;
 using System.IO;
 using System.Threading;
+using Ajf.Nuget.Logging;
 using HansJuergenWeb.Contracts;
 using HansJuergenWeb.MessageHandlers.Adapters;
 using HansJuergenWeb.MessageHandlers.MessageHandlers;
@@ -12,7 +13,7 @@ using Serilog;
 
 namespace HansJuergenWeb.MessageHandlers
 {
-    public class Worker
+    public class Worker:BaseWorker
     {
         private readonly IAppSettings _appSettings;
         private readonly IBusAdapter _bus;
@@ -38,7 +39,7 @@ namespace HansJuergenWeb.MessageHandlers
 
         public bool WorkDone { get; set; }
 
-        public void Start()
+        public override void Start()
         {
             try
             {
@@ -111,7 +112,7 @@ namespace HansJuergenWeb.MessageHandlers
             Log.Logger.Information("Done starting consumers");
         }
 
-        public void Stop()
+        public override void Stop()
         {
             _backgroundWorkerCleaning?.CancelAsync();
         }

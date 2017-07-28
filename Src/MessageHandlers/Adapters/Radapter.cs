@@ -14,14 +14,18 @@ namespace HansJuergenWeb.MessageHandlers.Adapters
         public Radapter(IAppSettings appSettings)
         {
             _appSettings = appSettings;
+
+            // Verify that at the very least, R is installed in supplied location
+            if(!File.Exists(appSettings.PathToR))
+                throw new Exception($"R could not be found in position {appSettings.PathToR}");
         }
+
         public void BatchProcess(string pathToScript, Guid messageId, string uploadDir)
         {
             Log.Logger.Information("Starting R processing...");
 
             var pathToData = Path.Combine(uploadDir, messageId.ToString());
 
-            //var pathToR = @"C:\Program Files\R\R-3.4.1\bin\R.exe";
             var fileName = $"\"{_appSettings.PathToR}\"";
             var arguments = $"CMD BATCH --vanilla --slave \"{pathToScript}\"";
 
@@ -37,7 +41,12 @@ namespace HansJuergenWeb.MessageHandlers.Adapters
             var process = Process.Start(pathToCmd);
             process.WaitForExit(30000);
 
-            Log.Logger.Information("Ended R processing...");
+            if(process.ExitCode==0)
+            Log.Logger.Information("Ended successful R processing...");
+            else
+            {
+                Log.Logger.Information($"Ended failed R processing : {process.ExitCode}");
+            }
         }
     }
 }

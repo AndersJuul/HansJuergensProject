@@ -33,8 +33,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Ajf.Nuget.Logging, Version=1.0.0.53, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Ajf.Nuget.Logging.1.0.0.53\lib\net47\Ajf.Nuget.Logging.dll</HintPath>
+    <Reference Include="Ajf.Nuget.Logging, Version=1.0.0.54, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ajf.Nuget.Logging.1.0.0.54\lib\net47\Ajf.Nuget.Logging.dll</HintPath>
     </Reference>
     <Reference Include="EasyNetQ, Version=2.0.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\EasyNetQ.2.0.4\lib\net451\EasyNetQ.dll</HintPath>
@@ -104,6 +104,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="Topshelf, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Topshelf.4.0.3\lib\net452\Topshelf.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
