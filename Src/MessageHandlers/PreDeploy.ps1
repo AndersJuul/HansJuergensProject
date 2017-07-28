@@ -5,7 +5,7 @@
     $path.Path
 }
 
-$ServiceName = $OctopusParameters['MyServiceName']
+$ServiceName = $OctopusParameters['HansJuergenWeb.MessageHandlers']
 $ExePath = Get-ServiceExePath $ServiceName
 
 Write-Host "Removing service: " + $ServiceName
