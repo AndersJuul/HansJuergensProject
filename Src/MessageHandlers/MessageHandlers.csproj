@@ -161,12 +161,6 @@
     <Content Include="ConfirmationMailTemplate.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="PreDeploy.ps1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PostDeploy.ps1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <None Include="TheScript.R">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
