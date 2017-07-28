@@ -46,7 +46,7 @@ namespace HansJuergenWeb.MessageHandlers
 
                 var backgroundWorkerSetup = new BackgroundWorker();
                 backgroundWorkerSetup.DoWork += BackgroundWorker_DoWork;
-                //backgroundWorkerSetup.RunWorkerAsync();
+                backgroundWorkerSetup.RunWorkerAsync();
                 Log.Logger.Information("B");
 
                 _backgroundWorkerCleaning = new BackgroundWorker
@@ -54,7 +54,7 @@ namespace HansJuergenWeb.MessageHandlers
                     WorkerSupportsCancellation = true
                 };
                 _backgroundWorkerCleaning.DoWork += BackgroundWorkerCleaning_DoWork;
-                //_backgroundWorkerCleaning.RunWorkerAsync();
+                _backgroundWorkerCleaning.RunWorkerAsync();
                 Log.Logger.Information("C");
             }
             catch (Exception ex)
