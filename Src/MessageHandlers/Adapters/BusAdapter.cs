@@ -1,5 +1,6 @@
 ﻿using EasyNetQ;
 using HansJuergenWeb.MessageHandlers.Settings;
+using Serilog;
 
 namespace HansJuergenWeb.MessageHandlers.Adapters
 {
@@ -18,8 +19,12 @@ namespace HansJuergenWeb.MessageHandlers.Adapters
         {
             get
             {
-                if(_bus==null)
+                if (_bus == null)
+                {
+                    Log.Logger.Information("Creating Bus connection.");
                     _bus= RabbitHutch.CreateBus(_appSettings.EasyNetQConfig);
+                    Log.Logger.Information("Done creating Bus connection.");
+                }
                 return _bus;
             }
         }
