@@ -66,11 +66,13 @@ namespace HansJuergenWeb.MessageHandlers
             var backgroundWorker = sender as BackgroundWorker;
             if (backgroundWorker == null) return;
 
+            Thread.Sleep(10000);
+
             var lastClean = DateTime.MinValue;
 
             while (!backgroundWorker.CancellationPending)
             {
-                Thread.Sleep(100);
+                Thread.Sleep(1000);
                 if (!backgroundWorker.CancellationPending)
                     if (DateTime.Now.Subtract(lastClean) > TimeSpan.FromMinutes(1))
                     {
@@ -101,6 +103,7 @@ namespace HansJuergenWeb.MessageHandlers
 
         private void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
+            Thread.Sleep(3000);
             _bus.Bus.SubscribeAsync<FileUploadedEvent>("SendEmailConfirmingUpload",
                 _handleSendEmailConfirmingUpload.Handle);
             _bus.Bus.SubscribeAsync<FileReadyForProcessingEvent>("ProcessUploadedFileThroughR",
