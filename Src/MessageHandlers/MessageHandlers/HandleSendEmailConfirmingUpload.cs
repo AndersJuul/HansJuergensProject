@@ -4,6 +4,7 @@ using Ajf.Nuget.Logging;
 using AutoMapper;
 using EasyNetQ;
 using HansJuergenWeb.Contracts;
+using HansJuergenWeb.MessageHandlers.Adapters;
 using HansJuergenWeb.MessageHandlers.Services;
 using HansJuergenWeb.MessageHandlers.Settings;
 using Serilog;
@@ -12,12 +13,12 @@ namespace HansJuergenWeb.MessageHandlers.MessageHandlers
 {
     public class HandleSendEmailConfirmingUpload : IHandleSendEmailConfirmingUpload
     {
-        private readonly IBus _bus;
+        private readonly IBusAdapter _bus;
         private readonly IMailMessageService _mailMessageService;
         private readonly IMailSender _mailSender;
         private readonly IAppSettings _appSettings;
 
-        public HandleSendEmailConfirmingUpload(IBus bus, IMailMessageService mailMessageService, IMailSender mailSender, IAppSettings appSettings)
+        public HandleSendEmailConfirmingUpload(IBusAdapter bus, IMailMessageService mailMessageService, IMailSender mailSender, IAppSettings appSettings)
         {
             _bus = bus;
             _mailMessageService = mailMessageService;
@@ -42,7 +43,7 @@ namespace HansJuergenWeb.MessageHandlers.MessageHandlers
                         new string[] { })
                     .Result;
 
-                await _bus.PublishAsync(Mapper.Map<FileReadyForProcessingEvent>(message))
+                await _bus.Bus.PublishAsync(Mapper.Map<FileReadyForProcessingEvent>(message))
                     .ConfigureAwait(false);
             }
             catch (Exception e)

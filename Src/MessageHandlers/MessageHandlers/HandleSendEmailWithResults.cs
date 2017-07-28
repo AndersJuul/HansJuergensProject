@@ -3,8 +3,8 @@ using System.IO;
 using System.Threading.Tasks;
 using Ajf.Nuget.Logging;
 using AutoMapper;
-using EasyNetQ;
 using HansJuergenWeb.Contracts;
+using HansJuergenWeb.MessageHandlers.Adapters;
 using HansJuergenWeb.MessageHandlers.Services;
 using HansJuergenWeb.MessageHandlers.Settings;
 using Serilog;
@@ -13,12 +13,12 @@ namespace HansJuergenWeb.MessageHandlers.MessageHandlers
 {
     public class HandleSendEmailWithResults : IHandleSendEmailWithResults
     {
-        private readonly IBus _bus;
+        private readonly IBusAdapter _bus;
         private readonly IMailMessageService _mailMessageService;
         private readonly IMailSender _mailSender;
         private readonly IAppSettings _appSettings;
 
-        public HandleSendEmailWithResults(IBus bus, IMailMessageService mailMessageService, IMailSender mailSender,IAppSettings appSettings)
+        public HandleSendEmailWithResults(IBusAdapter bus, IMailMessageService mailMessageService, IMailSender mailSender,IAppSettings appSettings)
         {
             _bus = bus;
             _mailMessageService = mailMessageService;
@@ -43,7 +43,7 @@ namespace HansJuergenWeb.MessageHandlers.MessageHandlers
                         attachmentPaths)
                     .Result;
 
-                await _bus.PublishAsync(Mapper.Map<FileReadyForCleanupEvent>(message))
+                await _bus.Bus.PublishAsync(Mapper.Map<FileReadyForCleanupEvent>(message))
                     .ConfigureAwait(false);
             }
             catch (Exception e)

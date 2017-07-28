@@ -1,7 +1,6 @@
 ﻿using System;
 using Ajf.Nuget.Logging;
 using AutoMapper;
-using EasyNetQ;
 using HansJuergenWeb.Contracts;
 using HansJuergenWeb.MessageHandlers.Adapters;
 using HansJuergenWeb.MessageHandlers.MessageHandlers;
@@ -45,7 +44,7 @@ namespace HansJuergenWeb.MessageHandlers
                             Log.Logger.Information("4");
                             var radapter = new Radapter(appSettings);
                             Log.Logger.Information("5");
-                            IBus bus = null;// RabbitHutch.CreateBus(appSettings.EasyNetQConfig);
+                            IBusAdapter bus = new BusAdapter(appSettings);
                             Log.Logger.Information("6");
                             var mailMessageService = new MailMessageService(appSettings, subscriptionService);
                             Log.Logger.Information("7");

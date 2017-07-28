@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using AutoMapper;
-using EasyNetQ;
 using HansJuergenWeb.Contracts;
 using HansJuergenWeb.MessageHandlers.Adapters;
 using HansJuergenWeb.MessageHandlers.Settings;
@@ -11,11 +10,11 @@ namespace HansJuergenWeb.MessageHandlers.MessageHandlers
 {
     public class HandleProcessUploadedFileThroughR : IHandleProcessUploadedFileThroughR
     {
-        private readonly IRadapter _radapter;
         private readonly IAppSettings _appSettings;
-        private readonly IBus _bus;
+        private readonly IBusAdapter _bus;
+        private readonly IRadapter _radapter;
 
-        public HandleProcessUploadedFileThroughR(IBus bus, IAppSettings appSettings, IRadapter radapter)
+        public HandleProcessUploadedFileThroughR(IBusAdapter bus, IAppSettings appSettings, IRadapter radapter)
         {
             _radapter = radapter;
             _appSettings = appSettings;
@@ -30,12 +29,12 @@ namespace HansJuergenWeb.MessageHandlers.MessageHandlers
 
                 _radapter.BatchProcess(@".\TheScript.R", message.Id, _appSettings.UploadDir);
 
-                await _bus.PublishAsync(Mapper.Map<FileProcessedEvent>(message))
+                await _bus.Bus.PublishAsync(Mapper.Map<FileProcessedEvent>(message))
                     .ConfigureAwait(false);
             }
             catch (Exception e)
             {
-                Log.Logger.Error(e,"Exception during R processing");
+                Log.Logger.Error(e, "Exception during R processing");
                 throw;
             }
         }

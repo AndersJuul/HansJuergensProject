@@ -4,8 +4,8 @@ using System.Configuration;
 using System.Globalization;
 using System.IO;
 using System.Threading;
-using EasyNetQ;
 using HansJuergenWeb.Contracts;
+using HansJuergenWeb.MessageHandlers.Adapters;
 using HansJuergenWeb.MessageHandlers.MessageHandlers;
 using HansJuergenWeb.MessageHandlers.Settings;
 using Serilog;
@@ -15,14 +15,14 @@ namespace HansJuergenWeb.MessageHandlers
     public class Worker
     {
         private readonly IAppSettings _appSettings;
-        private readonly IBus _bus;
+        private readonly IBusAdapter _bus;
         private readonly IHandleProcessUploadedFileThroughR _handleProcessUploadedFileThroughR;
         private readonly IHandleSendEmailConfirmingUpload _handleSendEmailConfirmingUpload;
         private readonly IHandleSendEmailWithResults _handleSendEmailWithResults;
         private readonly IHandleUpdateSubscriptionDatabase _handleUpdateSubscriptionDatabase;
         private BackgroundWorker _backgroundWorkerCleaning;
 
-        public Worker(IBus bus, IAppSettings appSettings,
+        public Worker(IBusAdapter bus, IAppSettings appSettings,
             IHandleSendEmailConfirmingUpload handleSendEmailConfirmingUpload,
             IHandleProcessUploadedFileThroughR handleProcessUploadedFileThroughR,
             IHandleSendEmailWithResults handleSendEmailWithResults,
@@ -56,7 +56,6 @@ namespace HansJuergenWeb.MessageHandlers
                 _backgroundWorkerCleaning.DoWork += BackgroundWorkerCleaning_DoWork;
                 //_backgroundWorkerCleaning.RunWorkerAsync();
                 Log.Logger.Information("C");
-
             }
             catch (Exception ex)
             {
@@ -106,15 +105,15 @@ namespace HansJuergenWeb.MessageHandlers
         private void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             Log.Logger.Information("D");
-            _bus.SubscribeAsync<FileUploadedEvent>("SendEmailConfirmingUpload",
+            _bus.Bus.SubscribeAsync<FileUploadedEvent>("SendEmailConfirmingUpload",
                 _handleSendEmailConfirmingUpload.Handle);
             Log.Logger.Information("E");
-            _bus.SubscribeAsync<FileReadyForProcessingEvent>("ProcessUploadedFileThroughR",
+            _bus.Bus.SubscribeAsync<FileReadyForProcessingEvent>("ProcessUploadedFileThroughR",
                 _handleProcessUploadedFileThroughR.Handle);
             Log.Logger.Information("F");
-            _bus.SubscribeAsync<FileProcessedEvent>("SendEmailWithResults", _handleSendEmailWithResults.Handle);
+            _bus.Bus.SubscribeAsync<FileProcessedEvent>("SendEmailWithResults", _handleSendEmailWithResults.Handle);
             Log.Logger.Information("G");
-            _bus.SubscribeAsync<FileProcessedEvent>("UpdateSubscriptionDatabase",
+            _bus.Bus.SubscribeAsync<FileProcessedEvent>("UpdateSubscriptionDatabase",
                 _handleUpdateSubscriptionDatabase.Handle);
             Log.Logger.Information("H");
         }

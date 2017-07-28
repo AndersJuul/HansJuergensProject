@@ -124,6 +124,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adapters\BusAdapter.cs" />
+    <Compile Include="Adapters\IBusAdapter.cs" />
     <Compile Include="MessageHandlers\HandleProcessUploadedFileThroughR.cs" />
     <Compile Include="MessageHandlers\HandleSendEmailConfirmingUpload.cs" />
     <Compile Include="MessageHandlers\HandleSendEmailWithResults.cs" />
