@@ -29,6 +29,7 @@ namespace HansJuergenWeb.WebHJ.Controllers
             return View("Error", uploadErrorModel);
         }
 
+        [Authorize]
         public ActionResult Post(UploadModel uploadModel)
         {
             if(uploadModel==null)
