@@ -3,6 +3,7 @@ using HansJuergenWeb.Contracts;
 
 namespace HansJuergenWeb.WebHJ.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         public ActionResult Index()
