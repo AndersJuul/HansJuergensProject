@@ -251,6 +251,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="AppSettings.cs" />
     <Compile Include="App_Start\StructuremapMvc.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="TokenHelper.cs" />
     <Compile Include="Controllers\HomeController.cs" />

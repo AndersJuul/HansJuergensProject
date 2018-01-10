@@ -22,7 +22,7 @@ using Serilog;
 [assembly: OwinStartup(typeof(Startup))]
 namespace HansJuergenWeb.WebHJ
 {
-    public class Startup
+    public partial class Startup
     {
         public void Configuration(IAppBuilder app)
         {
@@ -65,14 +65,14 @@ namespace HansJuergenWeb.WebHJ
 
             app.UseOpenIdConnectAuthentication(new OpenIdConnectAuthenticationOptions
             {
-                ClientId = "tripgalleryhybrid",
+                ClientId = "hjhwebhybrid",
                 Authority = ConfigurationManager.AppSettings["IdentityServerApplicationUrl"],
-                RedirectUri = ConfigurationManager.AppSettings["UrlRideShareWeb"],
+                RedirectUri = ConfigurationManager.AppSettings["UrlHansJuergenWeb"],
                 SignInAsAuthenticationType = "Cookies",
                 ResponseType = "code id_token token",
                 Scope = "openid profile address gallerymanagement roles offline_access email",
                 UseTokenLifetime = false,
-                PostLogoutRedirectUri = ConfigurationManager.AppSettings["UrlRideShareWeb"],
+                PostLogoutRedirectUri = ConfigurationManager.AppSettings["UrlHansJuergenWeb"],
 
                 Notifications = new OpenIdConnectAuthenticationNotifications
                 {
@@ -122,13 +122,13 @@ namespace HansJuergenWeb.WebHJ
                         // request a refresh token
                         var tokenClientForRefreshToken = new TokenClient(
                             ConfigurationManager.AppSettings["IdentityServerApplicationUrl"] + "/connect/token",
-                            "tripgalleryhybrid",
+                            "hjhwebhybrid",
                             Constants.TripGalleryClientSecret);
 
                         var refreshResponse = await
                             tokenClientForRefreshToken.RequestAuthorizationCodeAsync(
                                 n.ProtocolMessage.Code,
-                                ConfigurationManager.AppSettings["UrlRideShareWeb"]);
+                                ConfigurationManager.AppSettings["UrlHansJuergenWeb"]);
 
                         var expirationDateAsRoundtripString
                             = DateTime.SpecifyKind(DateTime.UtcNow.AddSeconds(refreshResponse.ExpiresIn)
@@ -174,14 +174,6 @@ namespace HansJuergenWeb.WebHJ
                     }
                 }
             });
-        }
-        public class Constants
-        {
-
-
-            public const string TripGalleryClientSecret = "myrandomclientsecret";
-
-            public const string TripGalleryIssuerUri = "https://andersathome.dk/identity";
         }
     }
 }
