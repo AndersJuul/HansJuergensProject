@@ -24,6 +24,8 @@ namespace HansJuergenWeb.WebHJ
 {
     public partial class Startup
     {
+        private const string ClientId = "hjhwebhybrid";
+
         public void Configuration(IAppBuilder app)
         {
             Log.Logger = StandardLoggerConfigurator
@@ -65,7 +67,7 @@ namespace HansJuergenWeb.WebHJ
 
             app.UseOpenIdConnectAuthentication(new OpenIdConnectAuthenticationOptions
             {
-                ClientId = "hjhwebhybrid",
+                ClientId = ClientId,
                 Authority = ConfigurationManager.AppSettings["IdentityServerApplicationUrl"],
                 RedirectUri = ConfigurationManager.AppSettings["UrlHansJuergenWeb"],
                 SignInAsAuthenticationType = "Cookies",
@@ -122,7 +124,7 @@ namespace HansJuergenWeb.WebHJ
                         // request a refresh token
                         var tokenClientForRefreshToken = new TokenClient(
                             ConfigurationManager.AppSettings["IdentityServerApplicationUrl"] + "/connect/token",
-                            "hjhwebhybrid",
+                            ClientId,
                             Constants.TripGalleryClientSecret);
 
                         var refreshResponse = await
