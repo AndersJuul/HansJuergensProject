@@ -19,6 +19,9 @@ namespace HansJuergenWeb.WebHJ
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            Log.Logger.Information("Done app start...");
+
         }
     }
 }
