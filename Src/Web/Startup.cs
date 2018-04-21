@@ -75,7 +75,7 @@ namespace HansJuergenWeb.WebHJ
                 Scope = "openid profile address gallerymanagement roles offline_access email",
                 UseTokenLifetime = false,
                 PostLogoutRedirectUri = ConfigurationManager.AppSettings["UrlHansJuergenWeb"],
-
+                
                 Notifications = new OpenIdConnectAuthenticationNotifications
                 {
                     SecurityTokenValidated = async n =>
@@ -131,6 +131,11 @@ namespace HansJuergenWeb.WebHJ
                             tokenClientForRefreshToken.RequestAuthorizationCodeAsync(
                                 n.ProtocolMessage.Code,
                                 ConfigurationManager.AppSettings["UrlHansJuergenWeb"]);
+
+                        if (refreshResponse == null)
+                            Log.Logger.Debug("refreshResponse==null");
+                        else
+                            Log.Logger.Debug("refreshResponse" + refreshResponse);
 
                         var expirationDateAsRoundtripString
                             = DateTime.SpecifyKind(DateTime.UtcNow.AddSeconds(refreshResponse.ExpiresIn)
