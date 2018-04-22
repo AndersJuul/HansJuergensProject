@@ -135,7 +135,7 @@ namespace HansJuergenWeb.WebHJ
                         if (refreshResponse == null)
                             Log.Logger.Debug("refreshResponse==null");
                         else
-                            Log.Logger.Debug("refreshResponse" + refreshResponse);
+                            Log.Logger.Debug("refreshResponse == " + Json.Encode( refreshResponse));
 
                         var expirationDateAsRoundtripString
                             = DateTime.SpecifyKind(DateTime.UtcNow.AddSeconds(refreshResponse.ExpiresIn)
