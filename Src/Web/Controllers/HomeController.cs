@@ -1,5 +1,6 @@
 ﻿using System.Web.Mvc;
 using HansJuergenWeb.Contracts;
+using Serilog;
 
 namespace HansJuergenWeb.WebHJ.Controllers
 {
@@ -8,11 +9,14 @@ namespace HansJuergenWeb.WebHJ.Controllers
     {
         public ActionResult Index()
         {
+            Log.Logger.Debug("Displaying " + Request.RawUrl);
             return View();
         }
 
         public ActionResult About()
         {
+            Log.Logger.Debug("Displaying " + Request.RawUrl);
+
             ViewBag.Message = "Your application description page.";
 
             return View();
@@ -20,6 +24,8 @@ namespace HansJuergenWeb.WebHJ.Controllers
 
         public ActionResult Contact()
         {
+            Log.Logger.Debug("Displaying " + Request.RawUrl);
+
             ViewBag.Message = "Your contact page.";
 
             return View();
